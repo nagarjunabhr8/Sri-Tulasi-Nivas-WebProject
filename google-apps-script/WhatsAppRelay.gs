@@ -13,7 +13,7 @@
  *        google.apps-script.whatsapp-url: <paste here>
  *
  * HOW EACH RESIDENT GETS THEIR CALLMEBOT API KEY (one-time):
- *   1. Save the number  +34 644 82 70 37  in WhatsApp contacts
+ *   1. Save the number  +34 623 78 64 49  in WhatsApp contacts
  *   2. Send the message:  I allow callmebot to send me messages
  *   3. CallMeBot replies with a 6-digit API key
  *   4. Give that key to the admin to enter in the Residents page

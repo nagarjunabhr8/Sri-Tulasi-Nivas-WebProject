@@ -41,7 +41,7 @@ public class User {
     @Column(unique = true)
     private String phone;
 
-    private String whatsappApiKey; // CallMeBot API key — resident gets this once by messaging +34 644 82 70 37
+    private String whatsappApiKey; // Reserved field — no longer used (Twilio handles auth server-side)
 
     @JsonIgnore
     @Column(nullable = false)

@@ -19,18 +19,50 @@ const MeetingsPage = () => {
   const [expanded, setExpanded] = useState(null);
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
+  const [residents, setResidents] = useState([]);
+  const [selectedResidentId, setSelectedResidentId] = useState('');
+  const [individualAttendees, setIndividualAttendees] = useState([]);
 
   const load = () => {
     api.get('/meetings').then(r => setMeetings(r.data)).catch(() => {}).finally(() => setLoading(false));
   };
   useEffect(load, []);
 
+  useEffect(() => {
+    api.get('/residents')
+      .then(r => setResidents(r.data.filter(u => u.isActive && u.phone)))
+      .catch(() => {});
+  }, []);
+
+  const addAttendee = () => {
+    if (!selectedResidentId) return;
+    const res = residents.find(r => String(r.id) === String(selectedResidentId));
+    if (!res) return;
+    if (individualAttendees.find(a => a.phone === res.phone)) return;
+    setIndividualAttendees(prev => [...prev, {
+      id: res.id,
+      name: `${res.firstName} ${res.lastName}`,
+      phone: res.phone,
+      flatNo: res.flatNo,
+    }]);
+    setSelectedResidentId('');
+  };
+
+  const removeAttendee = (phone) => {
+    setIndividualAttendees(prev => prev.filter(a => a.phone !== phone));
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.post('/meetings', { ...form, attendees: parseInt(form.attendees) || 0 });
+      const recipientsStr = form.notifyType === 'INDIVIDUAL'
+        ? individualAttendees.map(a => `${a.name}::${a.phone}`).join(',')
+        : form.recipients;
+      await api.post('/meetings', { ...form, recipients: recipientsStr, attendees: parseInt(form.attendees) || 0 });
       setForm(empty);
+      setIndividualAttendees([]);
+      setSelectedResidentId('');
       setShowForm(false);
       load();
     } catch { } finally { setSaving(false); }
@@ -129,12 +161,54 @@ const MeetingsPage = () => {
             </div>
             {form.notifyType === 'INDIVIDUAL' && (
               <div className="auth-field">
-                <label>RECIPIENT PHONE NUMBERS</label>
-                <input
-                  value={form.recipients}
-                  onChange={e => setForm({...form, recipients: e.target.value})}
-                  placeholder="9876543210, 9123456789 (comma-separated, +91 added automatically)"
-                />
+                <label>ADD ATTENDEES</label>
+                <div className="attendee-picker-row">
+                  <select
+                    className="attendee-select"
+                    value={selectedResidentId}
+                    onChange={e => setSelectedResidentId(e.target.value)}
+                  >
+                    <option value="">-- Select a Resident --</option>
+                    {residents
+                      .filter(r => !individualAttendees.find(a => a.phone === r.phone))
+                      .map(r => (
+                        <option key={r.id} value={r.id}>
+                          {r.firstName} {r.lastName}{r.flatNo ? ` (Flat ${r.flatNo})` : ''} — {r.phone}
+                        </option>
+                      ))
+                    }
+                  </select>
+                  <button
+                    type="button"
+                    className="btn-add-attendee"
+                    onClick={addAttendee}
+                    disabled={!selectedResidentId}
+                  >
+                    + Add
+                  </button>
+                </div>
+
+                {individualAttendees.length > 0 ? (
+                  <div className="attendee-chips">
+                    {individualAttendees.map(a => (
+                      <span key={a.phone} className="attendee-chip">
+                        <span className="chip-name">{a.name}</span>
+                        {a.flatNo && <span className="chip-flat">Flat {a.flatNo}</span>}
+                        <span className="chip-phone">{a.phone}</span>
+                        <button
+                          type="button"
+                          className="chip-remove"
+                          onClick={() => removeAttendee(a.phone)}
+                          title="Remove"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="attendee-empty">No attendees added yet. Select a resident and click "+ Add".</p>
+                )}
               </div>
             )}
             {(form.notifyType !== 'NONE' || form.immediateNotify) && (
