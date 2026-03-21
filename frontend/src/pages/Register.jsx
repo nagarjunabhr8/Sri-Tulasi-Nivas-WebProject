@@ -1,0 +1,164 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useAuthStore } from '../store/authStore';
+
+const Register = () => {
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register: registerUser, isLoading, error } = useAuthStore();
+  const navigate = useNavigate();
+  const [localError, setLocalError] = useState('');
+  const password = watch('password');
+
+  const onSubmit = async (data) => {
+    try {
+      setLocalError('');
+      await registerUser({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        role: data.role,
+      });
+      navigate('/dashboard');
+    } catch (err) {
+      setLocalError(err.response?.data?.message || 'Registration failed');
+    }
+  };
+
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Join Sri Tulasi Nivas Community</h1>
+
+        {(error || localError) && (
+          <div className="error-message">{error || localError}</div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name</label>
+              <input
+                id="firstName"
+                {...register('firstName', {
+                  required: 'First name is required',
+                })}
+                placeholder="John"
+              />
+              {errors.firstName && (
+                <span className="error">{errors.firstName.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                id="lastName"
+                {...register('lastName', {
+                  required: 'Last name is required',
+                })}
+                placeholder="Doe"
+              />
+              {errors.lastName && (
+                <span className="error">{errors.lastName.message}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address',
+                },
+              })}
+              placeholder="your@email.com"
+            />
+            {errors.email && (
+              <span className="error">{errors.email.message}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="phone">Phone</label>
+            <input
+              id="phone"
+              {...register('phone', {
+                required: 'Phone is required',
+              })}
+              placeholder="+1234567890"
+            />
+            {errors.phone && (
+              <span className="error">{errors.phone.message}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="role">User Type</label>
+            <select {...register('role', { required: 'User type is required' })}>
+              <option value="">Select user type</option>
+              <option value="tenant">Tenant</option>
+              <option value="owner">Owner</option>
+            </select>
+            {errors.role && (
+              <span className="error">{errors.role.message}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 8,
+                  message: 'Password must be at least 8 characters',
+                },
+              })}
+              placeholder="••••••••"
+            />
+            {errors.password && (
+              <span className="error">{errors.password.message}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (value) =>
+                  value === password || 'Passwords do not match',
+              })}
+              placeholder="••••••••"
+            />
+            {errors.confirmPassword && (
+              <span className="error">{errors.confirmPassword.message}</span>
+            )}
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+
+        <p className="form-footer">
+          Already have an account? <a href="/login">Login here</a>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default Register;

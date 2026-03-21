@@ -1,0 +1,17 @@
+# Local development profile - uses Docker PostgreSQL with password auth
+spring:
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:sri_tulasi_nivas}?TimeZone=UTC
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:3002
+
+jwt:
+  secret: sri-tulasi-nivas-local-dev-secret-key-minimum-64-chars-required-for-hs512-algorithm

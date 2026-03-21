@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sri Tulasi Nivas — Apartment Community</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --saffron: #D85A30;
+  --saffron-dark: #993C1D;
+  --gold: #C8962A;
+  --gold-light: #F0C060;
+  --green: #2E6B45;
+  --green-light: #4A9B65;
+  --cream: #FDF8F0;
+  --cream-dark: #F5EDD8;
+  --text-dark: #1A1209;
+  --text-mid: #4A3C28;
+  --text-soft: #7A6A52;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(26,18,9,0.10);
+  --radius: 12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh;}
+
+/* ── BANNER ── */
+.banner{
+  background: linear-gradient(135deg, #1A1209 0%, #2E1A08 40%, #3D2510 70%, #1A1209 100%);
+  padding:0;
+  position:relative;
+  overflow:hidden;
+  border-bottom: 3px solid var(--gold);
+}
+.banner::before{
+  content:'';position:absolute;inset:0;
+  background: repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(200,150,42,0.04) 40px,rgba(200,150,42,0.04) 80px);
+}
+.banner-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 48px;position:relative;z-index:1;
+}
+.banner-left{display:flex;align-items:center;gap:20px;}
+.tulasi-icon{
+  width:72px;height:72px;
+  background:radial-gradient(circle at 40% 35%, var(--gold-light), var(--gold));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:32px;flex-shrink:0;border:2px solid rgba(240,192,96,0.4);
+}
+.banner-title{font-family:'Playfair Display',serif;}
+.banner-title h1{font-size:32px;color:var(--gold-light);font-weight:700;letter-spacing:0.5px;line-height:1.15;}
+.banner-title p{font-size:13px;color:rgba(240,192,96,0.7);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.banner-right{text-align:right;}
+.banner-right .tagline{font-family:'Playfair Display',serif;font-size:14px;color:rgba(240,192,96,0.6);font-style:italic;}
+.banner-right .tel{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;letter-spacing:1px;}
+.banner-motif{
+  position:absolute;right:0;top:0;bottom:0;width:200px;
+  background: linear-gradient(to left, rgba(200,150,42,0.08), transparent);
+}
+
+/* ── NAV ── */
+nav{
+  background:#1A1209;
+  border-bottom:1px solid rgba(200,150,42,0.25);
+  position:sticky;top:0;z-index:999;
+}
+.nav-inner{display:flex;align-items:center;padding:0 32px;overflow-x:auto;}
+.nav-item{
+  position:relative;
+  white-space:nowrap;
+}
+.nav-link{
+  display:block;padding:16px 18px;
+  color:rgba(240,192,96,0.75);
+  font-size:13px;font-weight:500;letter-spacing:0.5px;
+  cursor:pointer;transition:color 0.2s;text-decoration:none;
+  border-bottom:2px solid transparent;
+}
+.nav-link:hover,.nav-link.active{color:var(--gold-light);border-bottom-color:var(--saffron);}
+.dropdown{
+  position:absolute;top:100%;left:0;
+  background:#221609;border:1px solid rgba(200,150,42,0.2);
+  border-radius:0 0 var(--radius) var(--radius);
+  min-width:240px;z-index:1000;
+  box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  display:none;
+}
+.dropdown.nested-parent{position:relative;}
+.nav-item:hover .dropdown{display:block;}
+.dropdown-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;color:rgba(240,192,96,0.7);
+  font-size:13px;cursor:pointer;transition:all 0.15s;
+  border-bottom:1px solid rgba(200,150,42,0.08);
+  position:relative;
+}
+.dropdown-item:hover{background:rgba(200,150,42,0.1);color:var(--gold-light);padding-left:24px;}
+.dropdown-item .arrow{font-size:10px;color:rgba(200,150,42,0.4);}
+.sub-dropdown{
+  position:absolute;left:100%;top:0;
+  background:#221609;border:1px solid rgba(200,150,42,0.2);
+  border-radius:0 var(--radius) var(--radius) 0;
+  min-width:220px;z-index:1001;display:none;
+  box-shadow:8px 8px 24px rgba(0,0,0,0.4);
+}
+.dropdown-item:hover .sub-dropdown{display:block;}
+
+/* ── MAIN ── */
+main{min-height:calc(100vh - 200px);padding:0;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── HOME ── */
+.hero{
+  background: linear-gradient(160deg, #1A1209 0%, #2E1A08 50%, #3D2510 100%);
+  padding:64px 48px 48px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8962a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.hero h2{font-family:'Playfair Display',serif;font-size:38px;color:var(--gold-light);font-weight:700;position:relative;z-index:1;}
+.hero p{color:rgba(240,192,96,0.6);font-size:15px;margin-top:10px;position:relative;z-index:1;}
+.hero-badges{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;position:relative;z-index:1;}
+.badge{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;letter-spacing:0.5px;}
+.badge-gold{background:rgba(200,150,42,0.15);color:var(--gold-light);border:1px solid rgba(200,150,42,0.3);}
+.badge-green{background:rgba(46,107,69,0.2);color:#7DD4A0;border:1px solid rgba(46,107,69,0.3);}
+
+.section{padding:48px;}
+.section-title{
+  font-family:'Playfair Display',serif;font-size:26px;color:var(--text-dark);font-weight:700;
+  margin-bottom:8px;
+}
+.section-subtitle{color:var(--text-soft);font-size:14px;margin-bottom:32px;}
+.divider{height:2px;background:linear-gradient(to right,var(--saffron),var(--gold),transparent);width:60px;margin:12px 0 28px;}
+
+/* Photo Gallery */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.gallery-card{
+  border-radius:var(--radius);overflow:hidden;
+  background:var(--cream-dark);border:1px solid rgba(200,150,42,0.2);
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+}
+.gallery-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.gallery-img{
+  height:180px;display:flex;align-items:center;justify-content:center;
+  font-size:48px;
+}
+.gallery-info{padding:14px;}
+.gallery-info h4{font-size:14px;font-weight:600;color:var(--text-dark);}
+.gallery-info p{font-size:12px;color:var(--text-soft);margin-top:3px;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;}
+.stat-card{
+  background:var(--white);border-radius:var(--radius);padding:20px;
+  border:1px solid rgba(200,150,42,0.15);text-align:center;
+}
+.stat-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--saffron);}
+.stat-label{font-size:12px;color:var(--text-soft);margin-top:4px;letter-spacing:0.5px;}
+
+/* Upcoming Events Panel */
+.events-sidebar{display:grid;grid-template-columns:1fr 340px;gap:32px;}
+.event-item{
+  display:flex;gap:16px;align-items:flex-start;padding:16px;
+  background:var(--white);border-radius:var(--radius);margin-bottom:12px;
+  border:1px solid rgba(200,150,42,0.12);transition:border-color 0.2s;
+}
+.event-item:hover{border-color:rgba(200,150,42,0.35);}
+.event-date{
+  background:var(--saffron);color:white;border-radius:8px;
+  padding:8px 12px;text-align:center;min-width:52px;flex-shrink:0;
+}
+.event-date .day{font-size:20px;font-weight:700;line-height:1;}
+.event-date .mon{font-size:10px;letter-spacing:1px;opacity:0.85;text-transform:uppercase;}
+.event-info h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.event-info p{font-size:12px;color:var(--text-soft);}
+.event-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;margin-top:6px;}
+
+/* ── MAINTENANCE ── */
+.maint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.maint-card{
+  background:var(--white);border-radius:var(--radius);padding:24px;
+  border:1px solid rgba(200,150,42,0.15);cursor:pointer;
+  transition:all 0.2s;
+}
+.maint-card:hover{border-color:var(--saffron);box-shadow:var(--shadow);}
+.maint-icon{font-size:28px;margin-bottom:12px;}
+.maint-card h4{font-size:15px;font-weight:600;margin-bottom:6px;}
+.maint-card p{font-size:12px;color:var(--text-soft);}
+.maint-status{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:500;margin-top:10px;}
+.status-ok{background:#E6F4EC;color:#1E6E3A;}
+.status-pending{background:#FEF3E2;color:#8B5E00;}
+.status-urgent{background:#FEE8E8;color:#9B2020;}
+
+/* Maintenance Balance Sheet */
+.balance-section{background:var(--white);border-radius:var(--radius);padding:28px;margin-top:28px;border:1px solid rgba(200,150,42,0.15);}
+.upload-row{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap;}
+.btn-primary{
+  padding:10px 22px;background:var(--saffron);color:white;border:none;
+  border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background 0.2s;
+}
+.btn-primary:hover{background:var(--saffron-dark);}
+.btn-outline{
+  padding:10px 22px;background:transparent;color:var(--saffron);
+  border:1.5px solid var(--saffron);border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-outline:hover{background:var(--saffron);color:white;}
+.btn-green{background:var(--green);color:white;padding:10px 22px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-green:hover{background:var(--green-light);}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  padding:9px 14px;border:1px solid rgba(200,150,42,0.25);border-radius:8px;
+  font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text-dark);
+  outline:none;transition:border-color 0.2s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--saffron);}
+
+.balance-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px;}
+.balance-table th{
+  background:#1A1209;color:var(--gold-light);padding:12px 16px;
+  text-align:left;font-weight:500;letter-spacing:0.5px;
+}
+.balance-table td{padding:11px 16px;border-bottom:1px solid rgba(200,150,42,0.1);}
+.balance-table tr:hover td{background:rgba(200,150,42,0.04);}
+.balance-table .total-row td{background:var(--cream-dark);font-weight:600;border-top:2px solid var(--gold);}
+.amount-credit{color:#1E6E3A;font-weight:500;}
+.amount-debit{color:#9B2020;font-weight:500;}
+.amount-balance{color:var(--saffron-dark);font-weight:700;}
+
+/* Add Entry Form */
+.entry-form{display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:10px;align-items:end;margin-bottom:20px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:12px;color:var(--text-soft);font-weight:500;}
+
+/* ── CONTACTS ── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.contact-card{
+  background:var(--white);border-radius:var(--radius);padding:20px;
+  border:1px solid rgba(200,150,42,0.15);display:flex;align-items:flex-start;gap:14px;
+}
+.contact-avatar{
+  width:48px;height:48px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.contact-info h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+.contact-info p{font-size:12px;color:var(--text-soft);}
+.contact-phone{color:var(--saffron);font-weight:600;font-size:13px;margin-top:5px;display:block;}
+
+/* ── EVENTS CALENDAR ── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.cal-nav{background:transparent;border:1px solid rgba(200,150,42,0.3);color:var(--gold);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:18px;}
+.cal-nav:hover{background:rgba(200,150,42,0.1);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:24px;}
+.cal-day-label{text-align:center;font-size:11px;font-weight:600;color:var(--text-soft);padding:8px 0;letter-spacing:0.5px;}
+.cal-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-size:13px;cursor:pointer;transition:all 0.15s;position:relative;
+}
+.cal-day:hover{background:rgba(200,150,42,0.12);}
+.cal-day.today{background:var(--saffron);color:white;font-weight:700;}
+.cal-day.has-event::after{
+  content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--gold);
+}
+.cal-day.other-month{color:var(--text-soft);opacity:0.4;}
+.events-list-panel{background:var(--white);border-radius:var(--radius);padding:20px;border:1px solid rgba(200,150,42,0.15);}
+
+/* ── PRESIDENT ── */
+.president-card{
+  background:linear-gradient(135deg,#1A1209,#2E1A08);
+  border-radius:var(--radius);padding:36px;display:flex;gap:32px;align-items:center;
+  border:1px solid rgba(200,150,42,0.3);margin-bottom:32px;
+}
+.president-avatar{
+  width:100px;height:100px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-light));
+  display:flex;align-items:center;justify-content:center;font-size:42px;
+  flex-shrink:0;border:3px solid rgba(240,192,96,0.5);
+}
+.president-info h3{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold-light);font-weight:700;}
+.president-info p{color:rgba(240,192,96,0.6);font-size:14px;margin-top:6px;}
+.president-term{display:inline-block;padding:5px 14px;background:rgba(200,150,42,0.15);color:var(--gold-light);border-radius:20px;font-size:12px;margin-top:10px;border:1px solid rgba(200,150,42,0.2);}
+
+.past-table{width:100%;border-collapse:collapse;font-size:13px;}
+.past-table th{background:#1A1209;color:var(--gold-light);padding:11px 16px;text-align:left;font-weight:500;}
+.past-table td{padding:10px 16px;border-bottom:1px solid rgba(200,150,42,0.1);}
+.past-table tr:hover td{background:rgba(200,150,42,0.04);}
+
+/* ── MEETINGS ── */
+.meeting-card{
+  background:var(--white);border-radius:var(--radius);padding:24px;
+  border:1px solid rgba(200,150,42,0.15);margin-bottom:16px;
+}
+.meeting-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.meeting-title{font-size:16px;font-weight:600;}
+.meeting-meta{font-size:12px;color:var(--text-soft);margin-top:3px;}
+.mom-section{background:var(--cream);border-radius:8px;padding:16px;margin-top:12px;}
+.mom-point{padding:6px 0;font-size:13px;border-bottom:1px solid rgba(200,150,42,0.1);display:flex;gap:8px;}
+.mom-point:last-child{border-bottom:none;}
+.point-num{color:var(--saffron);font-weight:600;flex-shrink:0;}
+.action-tag{display:inline-block;padding:2px 8px;background:#FEF3E2;color:#8B5E00;border-radius:10px;font-size:11px;margin-left:6px;}
+.ai-summary{background:linear-gradient(135deg,rgba(200,150,42,0.08),rgba(46,107,69,0.08));border-radius:8px;padding:14px;margin-top:12px;border:1px solid rgba(200,150,42,0.15);}
+.ai-badge{font-size:11px;color:var(--green);font-weight:600;letter-spacing:0.5px;margin-bottom:6px;}
+
+/* ── FUNDS ── */
+.fund-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.fund-card{
+  background:var(--white);border-radius:var(--radius);padding:20px;
+  border:1px solid rgba(200,150,42,0.15);text-align:center;
+}
+.fund-amount{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;}
+.fund-label{font-size:12px;color:var(--text-soft);margin-top:4px;}
+.fund-change{font-size:11px;margin-top:6px;}
+
+/* ── UPDATES ── */
+.update-item{
+  display:flex;gap:16px;padding:18px;
+  background:var(--white);border-radius:var(--radius);margin-bottom:12px;
+  border:1px solid rgba(200,150,42,0.12);transition:border-color 0.2s;
+}
+.update-item:hover{border-color:rgba(200,150,42,0.3);}
+.update-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.update-content h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.update-content p{font-size:13px;color:var(--text-soft);}
+.update-date{font-size:11px;color:var(--text-soft);margin-top:5px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .banner-inner{flex-direction:column;gap:16px;padding:20px 24px;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .events-sidebar{grid-template-columns:1fr;}
+  .entry-form{grid-template-columns:1fr 1fr;}
+  .fund-summary{grid-template-columns:1fr 1fr;}
+  .section{padding:28px 20px;}
+  .hero{padding:40px 20px 32px;}
+  .president-card{flex-direction:column;text-align:center;}
+  .nav-inner{padding:0 12px;}
+  .nav-link{padding:14px 12px;font-size:12px;}
+}
+
+/* Tabs */
+.tab-row{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.tab-btn{padding:8px 20px;border-radius:20px;border:1px solid rgba(200,150,42,0.25);background:transparent;color:var(--text-soft);font-size:13px;cursor:pointer;transition:all 0.15s;}
+.tab-btn.active,.tab-btn:hover{background:var(--saffron);color:white;border-color:var(--saffron);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1A1209;color:var(--gold-light);padding:12px 24px;border-radius:var(--radius);font-size:13px;border:1px solid rgba(200,150,42,0.3);z-index:9999;display:none;}
+
+/* Footer */
+footer{background:#1A1209;border-top:2px solid rgba(200,150,42,0.2);padding:28px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+footer p{font-size:12px;color:rgba(240,192,96,0.5);}
+
+/* ══ AUTH PAGE — Full screen ══ */
+#auth-page {
+  position:fixed;inset:0;z-index:99999;
+  display:flex;min-height:100vh;
+  font-family:'DM Sans',sans-serif;
+}
+#auth-page * { box-sizing:border-box; }
+
+/* Left panel — form */
+.auth-left {
+  width:100%;max-width:480px;flex-shrink:0;
+  background:#FDF8F0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:48px 52px;
+  position:relative;z-index:2;
+}
+@media(max-width:768px){
+  .auth-left{max-width:100%;padding:32px 28px;}
+  .auth-right{display:none!important;}
+}
+
+/* Right panel — festive banner */
+.auth-right {
+  flex:1;
+  background:linear-gradient(160deg,#1A1209 0%,#2E1A08 45%,#3D2510 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px;position:relative;overflow:hidden;
+}
+.auth-right::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 60px,rgba(200,150,42,0.03) 60px,rgba(200,150,42,0.03) 120px);
+}
+
+/* Logo top of left panel */
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+.auth-brand-icon{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,#C8962A,#F0C060);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.auth-brand h1{font-family:'Playfair Display',serif;font-size:20px;color:#1A1209;font-weight:700;margin:0;}
+.auth-brand p{font-size:11px;color:#7A6A52;letter-spacing:1.5px;text-transform:uppercase;margin:2px 0 0;}
+
+/* Tab switcher */
+.auth-tabs{display:flex;gap:0;margin-bottom:32px;border-bottom:2px solid #E8DEC8;}
+.auth-tab{
+  flex:1;padding:10px 0;text-align:center;font-size:14px;font-weight:500;
+  cursor:pointer;color:#7A6A52;border-bottom:2px solid transparent;
+  margin-bottom:-2px;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;
+}
+.auth-tab.active{color:#D85A30;border-bottom-color:#D85A30;}
+
+/* Form fields */
+.auth-field{margin-bottom:18px;}
+.auth-field label{display:block;font-size:11px;font-weight:600;color:#7A6A52;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.auth-field input,.auth-field select{
+  width:100%;padding:11px 14px;
+  background:#fff;border:1.5px solid #E8DEC8;
+  border-radius:8px;font-size:14px;color:#1A1209;outline:none;
+  font-family:'DM Sans',sans-serif;transition:border-color 0.2s;
+}
+.auth-field input:focus,.auth-field select:focus{border-color:#C8962A;}
+.auth-field input::placeholder{color:#B4A990;}
+.auth-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Buttons */
+.auth-submit{
+  width:100%;padding:13px;background:#D85A30;color:#fff;border:none;
+  border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;letter-spacing:0.3px;
+  transition:background 0.2s;margin-top:4px;
+}
+.auth-submit:hover{background:#993C1D;}
+.auth-submit:disabled{background:#C8B89A;cursor:not-allowed;}
+
+/* Links */
+.auth-link{color:#D85A30;cursor:pointer;font-weight:500;text-decoration:none;}
+.auth-link:hover{text-decoration:underline;}
+.auth-footer-text{font-size:13px;color:#7A6A52;text-align:center;margin-top:16px;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:#B4A990;font-size:12px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#E8DEC8;}
+
+/* Messages */
+.auth-msg{font-size:13px;text-align:center;padding:10px 14px;border-radius:8px;margin-top:12px;min-height:0;display:none;}
+.auth-msg.show{display:block;}
+.auth-msg.error{background:#FEE8E8;color:#9B2020;border:1px solid #F09595;}
+.auth-msg.success{background:#E6F4EC;color:#1E6E3A;border:1px solid #97C459;}
+.auth-msg.info{background:#FEF3E2;color:#8B5E00;border:1px solid #EF9F27;}
+
+/* Right panel content */
+.auth-right-inner{position:relative;z-index:1;text-align:center;max-width:420px;}
+.auth-big-icon{font-size:80px;margin-bottom:24px;line-height:1;}
+.auth-right h2{font-family:'Playfair Display',serif;font-size:32px;color:#F0C060;font-weight:700;margin:0 0 12px;line-height:1.3;}
+.auth-right p{font-size:15px;color:rgba(240,192,96,0.65);line-height:1.7;margin:0 0 32px;}
+.auth-features{display:flex;flex-direction:column;gap:14px;text-align:left;}
+.auth-feature{display:flex;align-items:center;gap:14px;}
+.auth-feature-icon{width:38px;height:38px;border-radius:50%;background:rgba(200,150,42,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:1px solid rgba(200,150,42,0.2);}
+.auth-feature-text h4{font-size:13px;font-weight:600;color:#F0C060;margin:0 0 2px;}
+.auth-feature-text p{font-size:12px;color:rgba(240,192,96,0.5);margin:0;}
+.auth-dots{display:flex;gap:8px;justify-content:center;margin-top:36px;}
+.auth-dot{width:6px;height:6px;border-radius:50%;background:rgba(200,150,42,0.3);}
+.auth-dot.active{background:#D85A30;width:20px;border-radius:3px;}
+
+/* User bar after login */
+#user-bar{
+  background:#0F0A04;border-bottom:1px solid rgba(200,150,42,0.15);
+  padding:7px 32px;display:none;align-items:center;justify-content:space-between;
+}
+.ub-info{font-size:12px;color:rgba(240,192,96,0.55);}
+.ub-info span{color:#F0C060;font-weight:500;}
+.ub-logout{font-size:12px;color:rgba(240,192,96,0.45);background:none;border:1px solid rgba(200,150,42,0.2);cursor:pointer;padding:5px 12px;border-radius:6px;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.ub-logout:hover{background:rgba(200,150,42,0.1);color:#F0C060;}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-left:6px;}
+.role-admin{background:rgba(200,150,42,0.2);color:#F0C060;}
+.role-resident{background:rgba(46,107,69,0.2);color:#7DD4A0;}
+
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH PAGE — Full Screen Login/Register ══ -->
+<div id="auth-page">
+
+  <!-- LEFT: Form panel -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-brand-icon">🌿</div>
+      <div>
+        <h1>Sri Tulasi Nivas</h1>
+        <p>Residents' Portal · Hyderabad</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="login-form">
+      <div class="auth-field">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="yourname@gmail.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="auth-submit" id="login-btn" onclick="doLogin()">Sign In to Portal</button>
+      <div class="auth-footer-text" style="margin-top:10px;">
+        <span onclick="doForgotPassword()" class="auth-link" style="font-size:12px;color:#7A6A52;">Forgot password?</span>
+      </div>
+      <div class="auth-divider">or</div>
+      <div class="auth-footer-text">
+        New resident? <span class="auth-link" onclick="switchAuthTab('register')">Register here</span>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="register-form" style="display:none;">
+      <div class="auth-2col">
+        <div class="auth-field">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" placeholder="Your full name">
+        </div>
+        <div class="auth-field">
+          <label>Flat No.</label>
+          <input type="text" id="reg-flat" placeholder="e.g. 302">
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Email Address</label>
+        <input type="email" id="reg-email" placeholder="yourname@gmail.com">
+      </div>
+      <div class="auth-field">
+        <label>Phone Number</label>
+        <input type="tel" id="reg-phone" placeholder="10-digit mobile number">
+      </div>
+      <div class="auth-2col">
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Min 6 characters">
+        </div>
+        <div class="auth-field">
+          <label>Confirm Password</label>
+          <input type="password" id="reg-confirm" placeholder="Re-enter password">
+        </div>
+      </div>
+      <button class="auth-submit" id="register-btn" onclick="doRegister()">Create My Account</button>
+      <div class="auth-divider">or</div>
+      <div class="auth-footer-text">
+        Already registered? <span class="auth-link" onclick="switchAuthTab('login')">Sign in here</span>
+      </div>
+    </div>
+
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+
+  <!-- RIGHT: Festive banner -->
+  <div class="auth-right">
+    <div class="auth-right-inner">
+      <div class="auth-big-icon">🏠</div>
+      <h2>Your Community,<br>Your Home</h2>
+      <p>Stay connected with everything happening at Sri Tulasi Nivas — events, maintenance, meetings and more.</p>
+      <div class="auth-features">
+        <div class="auth-feature">
+          <div class="auth-feature-icon">📅</div>
+          <div class="auth-feature-text">
+            <h4>Events & Festivals</h4>
+            <p>Ugadi, Diwali, Vinayaka Chavithi & community gatherings</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">🔧</div>
+          <div class="auth-feature-text">
+            <h4>Maintenance Tracking</h4>
+            <p>Monthly fees, issues, and service requests all in one place</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">💰</div>
+          <div class="auth-feature-text">
+            <h4>Transparent Funds</h4>
+            <p>Community collections, expenses and balance sheets</p>
+          </div>
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon">📢</div>
+          <div class="auth-feature-text">
+            <h4>Instant Updates</h4>
+            <p>Announcements, notices and meeting minutes</p>
+          </div>
+        </div>
+      </div>
+      <div class="auth-dots" style="margin-top:32px;">
+        <div class="auth-dot active"></div>
+        <div class="auth-dot"></div>
+        <div class="auth-dot"></div>
+      </div>
+      <div style="margin-top:28px;font-size:12px;color:rgba(240,192,96,0.35);letter-spacing:1px;">
+        Est. 2020 · Hyderabad, Telangana
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ USER BAR (visible after login) ══ -->
+<div id="user-bar">
+  <div class="ub-info">
+    Welcome, <span id="ub-name">Resident</span>
+    <span class="role-badge role-resident" id="ub-role-badge">Resident</span>
+    &nbsp;·&nbsp; Flat <span id="ub-flat">—</span>
+  </div>
+  <button class="ub-logout" onclick="doLogout()">Sign Out ↩</button>
+</div>
+
+
+
+
+
+<!-- BANNER -->
+<div class="banner">
+  <div class="banner-motif"></div>
+  <div class="banner-inner">
+    <div class="banner-left">
+      <div class="tulasi-icon">🌿</div>
+      <div class="banner-title">
+        <h1>Sri Tulasi Nivas</h1>
+        <p>Residential Apartment Community · Hyderabad</p>
+      </div>
+    </div>
+    <div class="banner-right">
+      <div class="tagline">"Where Community Blossoms"</div>
+      <div class="tel">Est. 2020 · Telangana, India</div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+
+    <div class="nav-item">
+      <span class="nav-link active" onclick="showPage('home')">Home</span>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('events')">Events ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('events','community')">Community Gatherings</div>
+        <div class="dropdown-item" onclick="showPage('events','festivals')">Festivals &amp; Cultural</div>
+        <div class="dropdown-item" onclick="showPage('events','sports')">Sports &amp; Fitness</div>
+        <div class="dropdown-item" onclick="showPage('events','workshops')">Workshops &amp; Classes</div>
+        <div class="dropdown-item" onclick="showPage('events','children')">Children's Activities</div>
+        <div class="dropdown-item" onclick="showPage('events','announcements')">Announcements</div>
+        <div class="dropdown-item" onclick="showPage('events','clubhouse')">Clubhouse Events</div>
+        <div class="dropdown-item" onclick="showPage('events','charity')">Charity &amp; Volunteering</div>
+        <div class="dropdown-item" onclick="showPage('events','seasonal')">Seasonal Celebrations</div>
+        <div class="dropdown-item" onclick="showPage('events','committees')">Resident Committees</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('maintenance')">Maintenance ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('maintenance','current')">Current Month Maintenance</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','housekeeping')">Housekeeping &amp; Cleaning</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','water')">Water Supply &amp; Plumbing</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','electrical')">Electrical &amp; Power Backup</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','safety')">Safety &amp; Security</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','pest')">Pest Control</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','landscaping')">Landscaping &amp; Common Areas</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','appliance')">Appliance &amp; Fixture Repairs</div>
+        <div class="dropdown-item" onclick="showPage('maintenance','inspection')">General Inspection / Preventive</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('issues')">Issues</span>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('meetings')">Meetings ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('meetings','recent')">Recent Meetings</div>
+        <div class="dropdown-item" onclick="showPage('meetings','upcoming')">Upcoming Meetings</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('funds')">Apartment Funds ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" style="position:relative;">
+          Festival Collections <span class="arrow">›</span>
+          <div class="sub-dropdown">
+            <div class="dropdown-item" onclick="showPage('funds','vinayaka-col')">Vinayaka Chavithi Collection</div>
+            <div class="dropdown-item" onclick="showPage('funds','diwali-col')">Diwali Collection</div>
+            <div class="dropdown-item" onclick="showPage('funds','other-col')">Other Festivals</div>
+          </div>
+        </div>
+        <div class="dropdown-item" style="position:relative;">
+          Festival Expenses <span class="arrow">›</span>
+          <div class="sub-dropdown">
+            <div class="dropdown-item" onclick="showPage('funds','vinayaka-exp')">Vinayaka Chavithi Expenses</div>
+            <div class="dropdown-item" onclick="showPage('funds','diwali-exp')">Diwali Expenses</div>
+            <div class="dropdown-item" onclick="showPage('funds','other-exp')">Other Festivals</div>
+          </div>
+        </div>
+        <div class="dropdown-item" onclick="showPage('funds','community')">Other Community Funds</div>
+        <div class="dropdown-item" onclick="showPage('funds','reserve')">Maintenance Reserve Fund</div>
+        <div class="dropdown-item" onclick="showPage('funds','emergency')">Emergency / Contingency Fund</div>
+        <div class="dropdown-item" onclick="showPage('funds','charity')">Charity &amp; Social Causes</div>
+        <div class="dropdown-item" onclick="showPage('funds','reports')">Fund Utilisation Reports</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('contacts')">Contacts ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('contacts','watchman')">Watchman / Security</div>
+        <div class="dropdown-item" onclick="showPage('contacts','electrician')">Electrician</div>
+        <div class="dropdown-item" onclick="showPage('contacts','plumber')">Plumber</div>
+        <div class="dropdown-item" onclick="showPage('contacts','carpenter')">Carpenter</div>
+        <div class="dropdown-item" onclick="showPage('contacts','housekeeping')">Housekeeping Staff</div>
+        <div class="dropdown-item" onclick="showPage('contacts','gardener')">Gardener / Landscaping</div>
+        <div class="dropdown-item" onclick="showPage('contacts','pestcontrol')">Pest Control</div>
+        <div class="dropdown-item" onclick="showPage('contacts','lift')">Lift / Elevator Service</div>
+        <div class="dropdown-item" onclick="showPage('contacts','generator')">Generator / Power Backup</div>
+        <div class="dropdown-item" onclick="showPage('contacts','emergency')">Emergency Numbers</div>
+        <div class="dropdown-item" onclick="showPage('contacts','committee')">Committee Members</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('president')">President ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('president','current')">Present President</div>
+        <div class="dropdown-item" onclick="showPage('president','past')">Past Presidents</div>
+        <div class="dropdown-item" onclick="showPage('president','next')">Next President</div>
+        <div class="dropdown-item" onclick="showPage('president','election')">Election Details</div>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <span class="nav-link" onclick="showPage('updates')">Updates ▾</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="showPage('updates','general')">General Announcements</div>
+        <div class="dropdown-item" onclick="showPage('updates','maintenance')">Maintenance Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','events')">Event Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','funds')">Funds &amp; Finance Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','committee')">Committee Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','safety')">Safety &amp; Security Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','renovation')">Project / Renovation Updates</div>
+        <div class="dropdown-item" onclick="showPage('updates','newsletter')">Newsletter</div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<main>
+
+<!-- ══ HOME PAGE ══ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h2>Welcome to Sri Tulasi Nivas</h2>
+    <p>Your community portal for events, maintenance, meetings and more</p>
+    <div class="hero-badges">
+      <span class="badge badge-gold">🌿 Hyderabad, Telangana</span>
+      <span class="badge badge-green">✓ Active Community</span>
+      <span class="badge badge-gold">🏠 Residential Apartments</span>
+    </div>
+  </div>
+  <div class="section">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">20</div><div class="stat-label">Total Flats</div></div>
+      <div class="stat-card"><div class="stat-num">12</div><div class="stat-label">Events This Year</div></div>
+      <div class="stat-card"><div class="stat-num">94%</div><div class="stat-label">Maintenance Paid</div></div>
+      <div class="stat-card"><div class="stat-num">₹2.4L</div><div class="stat-label">Community Fund</div></div>
+    </div>
+    <div class="events-sidebar">
+      <div>
+        <div class="section-title">Recent Events</div>
+        <div class="section-subtitle">Photo highlights from our community celebrations</div>
+        <div class="divider"></div>
+        <div class="gallery-grid">
+          <div class="gallery-card"><div class="gallery-img" style="background:#FEF3E2;">🪔</div><div class="gallery-info"><h4>Diwali Celebrations 2024</h4><p>October 2024 · Block A Common Area</p></div></div>
+          <div class="gallery-card"><div class="gallery-img" style="background:#E6F4EC;">🐘</div><div class="gallery-info"><h4>Vinayaka Chavithi 2024</h4><p>September 2024 · Community Hall</p></div></div>
+          <div class="gallery-card"><div class="gallery-img" style="background:#FDE8E8;">🌸</div><div class="gallery-info"><h4>Ugadi Habba 2024</h4><p>April 2024 · Rooftop Garden</p></div></div>
+          <div class="gallery-card"><div class="gallery-img" style="background:#EEF2FF;">🏏</div><div class="gallery-info"><h4>Cricket Tournament 2024</h4><p>January 2024 · Open Grounds</p></div></div>
+          <div class="gallery-card"><div class="gallery-img" style="background:#F0FFF4;">🎨</div><div class="gallery-info"><h4>Rangoli Competition</h4><p>December 2023 · Entrance Area</p></div></div>
+          <div class="gallery-card"><div class="gallery-img" style="background:#FFF7ED;">🎂</div><div class="gallery-info"><h4>Children's Day 2023</h4><p>November 2023 · Clubhouse</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">Upcoming Events</div>
+        <div class="divider"></div>
+        <div class="event-item">
+          <div class="event-date"><div class="day">30</div><div class="mon">Mar</div></div>
+          <div class="event-info"><h4>Ugadi Habba 2026 🌸</h4><p>Community celebration at common area</p><span class="event-tag" style="background:#FEF3E2;color:#8B5E00;">Festival</span></div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><div class="day">14</div><div class="mon">Apr</div></div>
+          <div class="event-info"><h4>Sri Rama Navami Puja</h4><p>Common area · 8:00 AM</p><span class="event-tag" style="background:#E6F4EC;color:#1E6E3A;">Cultural</span></div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><div class="day">20</div><div class="mon">Apr</div></div>
+          <div class="event-info"><h4>Monthly Committee Meeting</h4><p>Clubhouse · 7:00 PM</p><span class="event-tag" style="background:#EEF2FF;color:#3730A3;">Meeting</span></div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><div class="day">05</div><div class="mon">May</div></div>
+          <div class="event-info"><h4>Maintenance Drive</h4><p>All blocks · Morning</p><span class="event-tag" style="background:#FEE8E8;color:#9B2020;">Maintenance</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EVENTS PAGE ══ -->
+<div id="page-events" class="page">
+  <div class="hero"><h2>Events</h2><p>Telugu Calendar — Telangana & Andhra Pradesh</p></div>
+  <div class="section">
+    <div id="events-sub-title" class="section-title">All Upcoming Events</div>
+    <div class="divider"></div>
+    <div class="cal-header">
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+      <span id="cal-month-label" style="font-family:'Playfair Display',serif;font-size:20px;font-weight:600;"></span>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calendar-grid"></div>
+    <div class="events-list-panel" id="events-list-panel">
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;">Telugu Calendar Events — 2026</div>
+      <div id="events-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAINTENANCE PAGE ══ -->
+<div id="page-maintenance" class="page">
+  <div class="hero"><h2>Maintenance</h2><p>Track, report and manage all apartment maintenance activities</p></div>
+  <div class="section">
+    <div id="maint-sub-title" class="section-title">Maintenance Overview</div>
+    <div class="divider"></div>
+    <div id="maint-overview">
+      <div class="maint-grid">
+        <div class="maint-card" onclick="showPage('maintenance','current')"><div class="maint-icon">💰</div><h4>Current Month Maintenance</h4><p>View and manage monthly maintenance fees and balance sheet</p><span class="maint-status status-pending">Update Pending</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','housekeeping')"><div class="maint-icon">🧹</div><h4>Housekeeping &amp; Cleaning</h4><p>Common areas, corridors, stairways and lobby cleaning</p><span class="maint-status status-ok">On Schedule</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','water')"><div class="maint-icon">🚰</div><h4>Water Supply &amp; Plumbing</h4><p>Tank levels, pipe maintenance, motor and borewell status</p><span class="maint-status status-ok">Normal</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','electrical')"><div class="maint-icon">⚡</div><h4>Electrical &amp; Power Backup</h4><p>Generator, UPS, common area lighting and wiring</p><span class="maint-status status-ok">Operational</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','safety')"><div class="maint-icon">🔒</div><h4>Safety &amp; Security</h4><p>CCTV cameras, fire safety, gate systems and access control</p><span class="maint-status status-urgent">CCTV Check Due</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','pest')"><div class="maint-icon">🐜</div><h4>Pest Control</h4><p>Scheduled treatments for common areas and drainage</p><span class="maint-status status-ok">Last Done: Feb</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','landscaping')"><div class="maint-icon">🌿</div><h4>Landscaping &amp; Common Areas</h4><p>Garden, lawns, terrace and open areas upkeep</p><span class="maint-status status-ok">Good</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','appliance')"><div class="maint-icon">🔧</div><h4>Appliance &amp; Fixture Repairs</h4><p>Lift, motors, pumps and common fixtures</p><span class="maint-status status-pending">Lift Service Due</span></div>
+        <div class="maint-card" onclick="showPage('maintenance','inspection')"><div class="maint-icon">🔍</div><h4>General Inspection</h4><p>Preventive maintenance rounds and building health checks</p><span class="maint-status status-ok">Last: 1 Mar 2026</span></div>
+      </div>
+    </div>
+
+    <!-- Current Month Maintenance Balance Sheet -->
+    <div id="maint-current-section" style="display:none;">
+      <div class="balance-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div><h3 style="font-size:18px;font-weight:600;">March 2026 — Maintenance Balance Sheet</h3><p style="font-size:13px;color:var(--text-soft);margin-top:3px;">Track collections, expenses and balance</p></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <label style="padding:9px 18px;background:var(--green);color:white;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">
+              📂 Upload Excel <input type="file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelUpload(this)">
+            </label>
+            <button class="btn-primary" onclick="exportTable()">⬇ Export</button>
+          </div>
+        </div>
+
+        <div class="entry-form" id="entry-form">
+          <div class="form-group"><label>Date</label><input type="date" id="entry-date"></div>
+          <div class="form-group"><label>Description</label><input type="text" id="entry-desc" placeholder="e.g. Flat A-101 maintenance"></div>
+          <div class="form-group"><label>Type</label><select id="entry-type"><option value="credit">Credit (Income)</option><option value="debit">Debit (Expense)</option></select></div>
+          <div class="form-group"><label>Amount (₹)</label><input type="number" id="entry-amount" placeholder="0"></div>
+          <div class="form-group"><label>&nbsp;</label><button class="btn-primary" onclick="addEntry()">+ Add</button></div>
+        </div>
+
+        <table class="balance-table" id="balance-table">
+          <thead><tr><th>#</th><th>Date</th><th>Description</th><th>Type</th><th>Credit (₹)</th><th>Debit (₹)</th><th>Balance (₹)</th><th></th></tr></thead>
+          <tbody id="balance-tbody"></tbody>
+          <tfoot><tr class="total-row"><td colspan="4" style="text-align:right;font-weight:600;">Total</td><td id="total-credit" class="amount-credit">—</td><td id="total-debit" class="amount-debit">—</td><td id="total-balance" class="amount-balance">—</td><td></td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ISSUES PAGE ══ -->
+<div id="page-issues" class="page">
+  <div class="hero"><h2>Issues</h2><p>Report and track apartment issues</p></div>
+  <div class="section">
+    <div class="section-title">Report an Issue</div>
+    <div class="divider"></div>
+    <div style="background:var(--white);border-radius:var(--radius);padding:28px;border:1px solid rgba(200,150,42,0.15);max-width:600px;">
+      <div style="display:grid;gap:14px;">
+        <div class="form-group"><label>Flat Number</label><input type="text" placeholder="e.g. B-304" style="width:100%;"></div>
+        <div class="form-group"><label>Issue Category</label><select style="width:100%;"><option>Plumbing</option><option>Electrical</option><option>Security</option><option>Cleaning</option><option>Lift / Elevator</option><option>Other</option></select></div>
+        <div class="form-group"><label>Description</label><textarea rows="4" placeholder="Describe the issue in detail..." style="width:100%;"></textarea></div>
+        <button class="btn-primary" onclick="showToast('Issue submitted successfully!')">Submit Issue</button>
+      </div>
+    </div>
+    <div style="margin-top:32px;">
+      <div class="section-title" style="font-size:18px;">Open Issues</div>
+      <div class="divider"></div>
+      <div class="event-item"><div class="event-date" style="background:#9B2020;"><div class="day">!</div><div class="mon">High</div></div><div class="event-info"><h4>CCTV Camera — Block B Entrance Not Working</h4><p>Reported by Flat B-201 · 12 Mar 2026</p><span class="event-tag" style="background:#FEE8E8;color:#9B2020;">Open</span></div></div>
+      <div class="event-item"><div class="event-date" style="background:#8B5E00;"><div class="day">!</div><div class="mon">Med</div></div><div class="event-info"><h4>Lobby Tube Light Fused — Ground Floor</h4><p>Reported by Watchman · 10 Mar 2026</p><span class="event-tag" style="background:#FEF3E2;color:#8B5E00;">In Progress</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MEETINGS PAGE ══ -->
+<div id="page-meetings" class="page">
+  <div class="hero"><h2>Meetings</h2><p>Minutes of Meetings, Action Items &amp; Summaries</p></div>
+  <div class="section">
+    <div id="meetings-sub-title" class="section-title">Meetings</div>
+    <div class="divider"></div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchMeetTab(this,'recent-meetings')">Recent Meetings</button>
+      <button class="tab-btn" onclick="switchMeetTab(this,'upcoming-meetings')">Upcoming Meetings</button>
+    </div>
+    <div id="recent-meetings">
+      <div class="meeting-card">
+        <div class="meeting-header"><div><div class="meeting-title">Monthly Committee Meeting — February 2026</div><div class="meeting-meta">15 February 2026 · Clubhouse · 7:00 PM · 18 members attended</div></div><span class="event-tag" style="background:#E6F4EC;color:#1E6E3A;padding:5px 12px;">Completed</span></div>
+        <div class="mom-section">
+          <div style="font-size:12px;font-weight:600;letter-spacing:0.5px;color:var(--text-soft);margin-bottom:8px;">MINUTES OF MEETING</div>
+          <div class="mom-point"><span class="point-num">1.</span><span>Maintenance fee revision discussed — proposed increase of ₹100 per flat from April 2026. <span class="action-tag">Action: Secretary to circulate notice</span></span></div>
+          <div class="mom-point"><span class="point-num">2.</span><span>CCTV upgrade — Block B camera replacement approved. Budget: ₹8,500. <span class="action-tag">Action: Treasurer to release funds</span></span></div>
+          <div class="mom-point"><span class="point-num">3.</span><span>Ugadi 2026 celebration planning initiated. Volunteer committee formed. <span class="action-tag">Action: Event committee to plan</span></span></div>
+          <div class="mom-point"><span class="point-num">4.</span><span>Water tank cleaning scheduled for March. Residents to be informed 3 days prior.</span></div>
+        </div>
+        <div class="ai-summary"><div class="ai-badge">✨ AI SUMMARY</div><p style="font-size:13px;color:var(--text-soft);">Key outcomes: Maintenance fee hike proposed (+₹100 from April), CCTV upgrade approved (₹8,500), Ugadi committee formed, water tank cleaning in March. 4 action items assigned to Secretary, Treasurer and Event Committee.</p></div>
+      </div>
+    </div>
+    <div id="upcoming-meetings" style="display:none;">
+      <div class="meeting-card">
+        <div class="meeting-header"><div><div class="meeting-title">Monthly Committee Meeting — March 2026</div><div class="meeting-meta">20 March 2026 · Clubhouse · 7:00 PM</div></div><span class="event-tag" style="background:#FEF3E2;color:#8B5E00;padding:5px 12px;">Upcoming</span></div>
+        <div style="margin-top:12px;"><div class="form-group"><label style="font-size:12px;color:var(--text-soft);">Add Agenda / MOM Points</label><textarea rows="3" placeholder="Enter meeting points, agenda items or action items..." style="width:100%;margin-top:6px;"></textarea></div><button class="btn-primary" style="margin-top:10px;" onclick="showToast('Meeting notes saved and AI summary will be generated!')">Save &amp; Generate AI Summary</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FUNDS PAGE ══ -->
+<div id="page-funds" class="page">
+  <div class="hero"><h2>Apartment Funds</h2><p>Transparent financial management for Sri Tulasi Nivas</p></div>
+  <div class="section">
+    <div id="funds-sub-title" class="section-title">Fund Overview</div>
+    <div class="divider"></div>
+    <div class="fund-summary">
+      <div class="fund-card"><div class="fund-amount" style="color:var(--green);">₹1,24,500</div><div class="fund-label">Festival Collections</div><div class="fund-change" style="color:#1E6E3A;">▲ ₹12,000 this month</div></div>
+      <div class="fund-card"><div class="fund-amount" style="color:var(--saffron);">₹89,200</div><div class="fund-label">Festival Expenses</div><div class="fund-change" style="color:#9B2020;">▼ ₹4,500 this month</div></div>
+      <div class="fund-card"><div class="fund-amount" style="color:var(--gold);">₹2,40,000</div><div class="fund-label">Total Community Fund</div><div class="fund-change" style="color:#1E6E3A;">Net Surplus ▲</div></div>
+    </div>
+    <table class="balance-table">
+      <thead><tr><th>Fund Category</th><th>Opening Balance</th><th>Total Collected</th><th>Total Spent</th><th>Closing Balance</th></tr></thead>
+      <tbody>
+        <tr><td>Vinayaka Chavithi Collection</td><td class="amount-credit">₹0</td><td class="amount-credit">₹52,000</td><td class="amount-debit">₹48,500</td><td class="amount-balance">₹3,500</td></tr>
+        <tr><td>Diwali Collection</td><td class="amount-credit">₹3,500</td><td class="amount-credit">₹38,000</td><td class="amount-debit">₹29,800</td><td class="amount-balance">₹11,700</td></tr>
+        <tr><td>Maintenance Reserve Fund</td><td class="amount-credit">₹80,000</td><td class="amount-credit">₹1,20,000</td><td class="amount-debit">₹95,000</td><td class="amount-balance">₹1,05,000</td></tr>
+        <tr><td>Emergency / Contingency Fund</td><td class="amount-credit">₹20,000</td><td class="amount-credit">₹20,000</td><td class="amount-debit">₹5,000</td><td class="amount-balance">₹35,000</td></tr>
+        <tr><td>Charity &amp; Social Causes</td><td class="amount-credit">₹0</td><td class="amount-credit">₹12,500</td><td class="amount-debit">₹8,000</td><td class="amount-balance">₹4,500</td></tr>
+        <tr class="total-row"><td><strong>Grand Total</strong></td><td class="amount-credit">₹1,03,500</td><td class="amount-credit">₹2,42,500</td><td class="amount-debit">₹1,86,300</td><td class="amount-balance">₹1,59,700</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ CONTACTS PAGE ══ -->
+<div id="page-contacts" class="page">
+  <div class="hero"><h2>Contacts</h2><p>Important numbers for Sri Tulasi Nivas residents</p></div>
+  <div class="section">
+    <div id="contacts-sub-title" class="section-title">All Contacts</div>
+    <div class="divider"></div>
+    <div class="contact-grid" id="contacts-grid">
+      <div class="contact-card"><div class="contact-avatar" style="background:#FEF3E2;">🛡️</div><div class="contact-info"><h4>Raju (Watchman)</h4><p>Security / Gate — 24×7</p><span class="contact-phone">📞 98765 43210</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#FFFBEB;">⚡</div><div class="contact-info"><h4>Suresh (Electrician)</h4><p>Electrical &amp; Power Backup</p><span class="contact-phone">📞 97654 32109</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#EFF6FF;">🚰</div><div class="contact-info"><h4>Ramaiah (Plumber)</h4><p>Water Supply &amp; Plumbing</p><span class="contact-phone">📞 96543 21098</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#FFF7ED;">🪚</div><div class="contact-info"><h4>Venkat (Carpenter)</h4><p>Woodwork &amp; Fixtures</p><span class="contact-phone">📞 95432 10987</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#F0FFF4;">🧹</div><div class="contact-info"><h4>Lakshmi (Housekeeping)</h4><p>Common Area Cleaning</p><span class="contact-phone">📞 94321 09876</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#F0FFF4;">🌿</div><div class="contact-info"><h4>Gopal (Gardener)</h4><p>Landscaping &amp; Garden</p><span class="contact-phone">📞 93210 98765</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#FFF0F0;">🐜</div><div class="contact-info"><h4>Pest Control Services</h4><p>Quarterly Treatment</p><span class="contact-phone">📞 92109 87654</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#F8F0FF;">🛗</div><div class="contact-info"><h4>Otis Lift Services</h4><p>Elevator Maintenance</p><span class="contact-phone">📞 1800-XXX-XXXX</span></div></div>
+      <div class="contact-card"><div class="contact-avatar" style="background:#FFFBEB;">🔋</div><div class="contact-info"><h4>Suryaa Generators</h4><p>DG Set &amp; UPS Maintenance</p><span class="contact-phone">📞 91098 76543</span></div></div>
+      <div class="contact-card" style="border:2px solid rgba(220,38,38,0.3);background:#FFF5F5;"><div class="contact-avatar" style="background:#FEE8E8;">🚨</div><div class="contact-info"><h4>Emergency Numbers</h4><p>Police · Fire · Ambulance</p><span class="contact-phone">100 · 101 · 108</span></div></div>
+      <div class="contact-card" style="border:2px solid rgba(200,150,42,0.3);"><div class="contact-avatar" style="background:#FEF3E2;">👑</div><div class="contact-info"><h4>Committee Members</h4><p>President, Secretary, Treasurer</p><span class="contact-phone" onclick="showPage('president','current')" style="cursor:pointer;">View Contacts →</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRESIDENT PAGE ══ -->
+<div id="page-president" class="page">
+  <div class="hero"><h2>President</h2><p>Leadership &amp; Governance of Sri Tulasi Nivas</p></div>
+  <div class="section">
+    <div id="president-sub-title" class="section-title">Present President</div>
+    <div class="divider"></div>
+    <div class="president-card">
+      <div class="president-avatar">👤</div>
+      <div class="president-info">
+        <h3>Sri Krishna Siddhardha T</h3>
+        <p>President, Sri Tulasi Nivas Residents' Welfare Association</p>
+        <p style="color:rgba(240,192,96,0.5);font-size:13px;margin-top:4px;">Flat No. 303 · Elected by resident vote</p>
+        <span class="president-term">Term: 01 November 2025 – 01 June 2026</span>
+        <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;">
+          <span style="color:rgba(240,192,96,0.6);font-size:13px;">📞 97396 02082</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;flex-wrap:wrap;">
+      <div class="meeting-card"><h4 style="font-weight:600;margin-bottom:8px;">Secretary</h4><p style="font-size:13px;color:var(--text-soft);">Sri Balu · Flat 502</p><p style="font-size:13px;color:var(--saffron);margin-top:4px;">📞 85006 55614</p></div>
+      <div class="meeting-card"><h4 style="font-weight:600;margin-bottom:8px;">Treasurer</h4><p style="font-size:13px;color:var(--text-soft);">Sri Manoj S · Flat 103</p><p style="font-size:13px;color:var(--saffron);margin-top:4px;">📞 76808 51706</p></div>
+    </div>
+    <div class="section-title" style="font-size:18px;">Past Presidents</div>
+    <div class="divider"></div>
+    <table class="past-table">
+      <thead><tr><th>#</th><th>Name</th><th>Flat</th><th>Term</th><th>Achievements</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Sri Narendra Kumar A</td><td>503</td><td>1 Year</td><td>—</td></tr>
+        <tr><td>2</td><td>Sri Tirupati Reddy G</td><td>501</td><td>2 Years</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-title" style="font-size:18px;margin-top:36px;">Past Secretaries</div>
+    <div class="divider"></div>
+    <table class="past-table">
+      <thead><tr><th>#</th><th>Name</th><th>Flat</th><th>Term</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Sri Raghu Kanth B</td><td>402</td><td>1 Year</td></tr>
+        <tr><td>2</td><td>Sri Kishore Reddy V</td><td>101</td><td>2 Years</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ UPDATES PAGE ══ -->
+<div id="page-updates" class="page">
+  <div class="hero"><h2>Updates</h2><p>Latest news, notices and announcements</p></div>
+  <div class="section">
+    <div id="updates-sub-title" class="section-title">All Updates</div>
+    <div class="divider"></div>
+    <div id="updates-container"><div class="update-item"><div class="update-icon" style="background:#FEF3E2;">📢</div><div class="update-content"><h4>Water Supply Interruption — 22 March 2026</h4><p>Water supply will be interrupted from 10 AM to 4 PM on 22 March for tank cleaning. Please store water in advance.</p><div class="update-date">Posted: 18 Mar 2026 · By: Secretary</div></div></div>
+    <div class="update-item"><div class="update-icon" style="background:#FDE8E8;">🔒</div><div class="update-content"><h4>Security Advisory — Gate Closing Time Updated</h4><p>Main gate will be closed at 10:30 PM effective 1 April 2026. All visitors must be registered before entry.</p><div class="update-date">Posted: 15 Mar 2026 · By: President</div></div></div>
+    <div class="update-item"><div class="update-icon" style="background:#E6F4EC;">💰</div><div class="update-content"><h4>Maintenance Fee Due — March 2026</h4><p>Monthly maintenance of ₹1,500 per flat is due by 5th March. Please pay to the Treasurer or via bank transfer.</p><div class="update-date">Posted: 1 Mar 2026 · By: Treasurer</div></div></div>
+    <div class="update-item"><div class="update-icon" style="background:#EEF2FF;">🎉</div><div class="update-content"><h4>Ugadi Habba 2026 — Celebration Initiative</h4><p>We are organising a community Ugadi celebration at the common area. All residents are invited. Confirm participation to the organiser.</p><div class="update-date">Posted: 10 Mar 2026 · By: Event Committee</div></div></div>
+  </div>
+</div>
+</div>
+
+</main>
+
+<footer>
+  <p>© 2026 Sri Tulasi Nivas Residents' Welfare Association · Hyderabad, Telangana</p>
+  <p>Built with ❤️ for our community</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var SUPABASE_URL = 'https://bpuifqqqqladfgwahpys.supabase.co';
+var SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbz-y0Xz06w1cchiBa6pF5U-Re5q_BFHY6ikDC0_flC1zKsf0L-4PZxj0gnqelNVNakw/exec';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdWlmcXFxcWxhZGZnd2FocHlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4MzY2NjQsImV4cCI6MjA4OTQxMjY2NH0.27XZ_b5biMW85mW-7nJvvAiPfHhYJECj8oFN8CpTwX4';
+
+function supabaseFetch(table, filters) {
+  var url = SUPABASE_URL + '/rest/v1/' + table + '?select=*';
+  if (filters) url += '&' + filters;
+  return fetch(url, { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }).then(function(r){ return r.json(); });
+}
+
+function supabaseInsert(table, data) {
+  return fetch(SUPABASE_URL + '/rest/v1/' + table, { method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }, body: JSON.stringify(data) }).then(function(r){ return r.json(); });
+}
+
+
+// ── Google Sheets API helpers ──
+function sheetsFetch(sheetName, filter) {
+  var url = SHEETS_API_URL + '?sheet=' + sheetName;
+  if (filter) url += '&filter=' + filter;
+  return fetch(url).then(function(r){ return r.json(); }).then(function(d){ return d.data || []; });
+}
+function sheetsInsert(sheetName, data) {
+  return fetch(SHEETS_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sheet: sheetName, action: 'insert', data: data })
+  }).then(function(r){ return r.json(); });
+}
+function sheetsUpdate(sheetName, rowNum, data) {
+  return fetch(SHEETS_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sheet: sheetName, action: 'update', row: rowNum, data: data })
+  }).then(function(r){ return r.json(); });
+}
+function sheetsDelete(sheetName, rowNum) {
+  return fetch(SHEETS_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sheet: sheetName, action: 'delete', row: rowNum })
+  }).then(function(r){ return r.json(); });
+}
+
+// ── Load Contacts from Google Sheets ──
+function loadContacts() {
+  sheetsFetch('Contacts').then(function(rows) {
+    if (!rows || rows.length === 0) return;
+    var grid = document.getElementById('contacts-grid');
+    if (!grid) return;
+    var icons = {'Watchman':'🛡️','Security':'🛡️','Electrician':'⚡','Plumber':'🚰','Carpenter':'🪚','Housekeeping':'🧹','Gardener':'🌿','Pest Control':'🐜','Lift':'🛗','Generator':'🔋','Emergency':'🚨','Committee':'👑'};
+    var colors = {'Watchman':'#FEF3E2','Security':'#FEF3E2','Electrician':'#FFFBEB','Plumber':'#EFF6FF','Carpenter':'#FFF7ED','Housekeeping':'#F0FFF4','Gardener':'#F0FFF4','Pest Control':'#FFF0F0','Lift':'#F8F0FF','Generator':'#FFFBEB','Emergency':'#FFF5F5','Committee':'#FEF3E2'};
+    grid.innerHTML = rows.map(function(r) {
+      var role = r.Role || '';
+      var icon = icons[role] || '👤';
+      var bg = colors[role] || '#F5F5F5';
+      return '<div class="contact-card"><div class="contact-avatar" style="background:'+bg+';">'+icon+'</div><div class="contact-info"><h4>'+(r.Name||'—')+'</h4><p>'+role+(r.Block?' · '+r.Block:'')+'</p><span class="contact-phone">📞 '+(r.Phone||'—')+'</span>'+(r.AlternatePhone?'<br><span style="font-size:11px;color:var(--text-soft);">Alt: '+r.AlternatePhone+'</span>':'')+'</div></div>';
+    }).join('');
+  }).catch(function(e){ console.warn('Contacts load error:', e); });
+}
+
+// ── Load Events from Google Sheets ──
+function loadEvents() {
+  sheetsFetch('Events').then(function(rows) {
+    if (!rows || rows.length === 0) return;
+    var list = document.getElementById('events-list');
+    if (!list) return;
+    var tagColors = {'Festivals':'#FEF3E2:#8B5E00','Cultural':'#E6F4EC:#1E6E3A','Sports':'#F0FFF4:#065F46','Meeting':'#EEF2FF:#3730A3','Community':'#EEF2FF:#3730A3','Seasonal':'#FFFBEB:#92400E'};
+    list.innerHTML = rows.map(function(r) {
+      var tc = (tagColors[r.Category] || '#F5F5F5:#555').split(':');
+      return '<div class="event-item"><div class="event-info"><h4>'+(r.Title||'')+'</h4><p>'+(r.Date||'')+(r.Venue?' · '+r.Venue:'')+'</p><span class="event-tag" style="background:'+tc[0]+';color:'+tc[1]+';">'+(r.Category||'Event')+'</span></div></div>';
+    }).join('');
+  }).catch(function(e){ console.warn('Events load error:', e); });
+}
+
+// ── Load Updates from Google Sheets ──
+function loadUpdates() {
+  sheetsFetch('Updates').then(function(rows) {
+    if (!rows || rows.length === 0) return;
+    var container = document.getElementById('updates-container');
+    if (!container) return;
+    var icons = {'General':'📢','Maintenance':'🔧','Events':'🎉','Funds':'💰','Committee':'👥','Safety':'🔒','Renovation':'🏗️','Newsletter':'📰'};
+    var bgs = {'General':'#FEF3E2','Maintenance':'#FEE8E8','Events':'#EEF2FF','Funds':'#E6F4EC','Safety':'#FDE8E8'};
+    container.innerHTML = rows.map(function(r) {
+      var icon = icons[r.Category] || '📢';
+      var bg = bgs[r.Category] || '#F5F5F5';
+      return '<div class="update-item"><div class="update-icon" style="background:'+bg+';">'+icon+'</div><div class="update-content"><h4>'+(r.Title||'')+'</h4><p>'+(r.Body||'')+'</p><div class="update-date">'+(r.CreatedAt||'')+(r.PostedBy?' · By: '+r.PostedBy:'')+'</div></div></div>';
+    }).join('');
+  }).catch(function(e){ console.warn('Updates load error:', e); });
+}
+
+// ── Load Residents/Maintenance from Google Sheets ──
+function loadMaintenance() {
+  sheetsFetch('Maintenance').then(function(rows) {
+    if (!rows || rows.length === 0) return;
+    balanceEntries = rows.map(function(r) {
+      return {
+        date: r.PaidDate || r.CreatedAt || '',
+        desc: 'Flat ' + (r.FlatNo||'') + ' - ' + (r.ResidentName||'') + ' (' + (r.Month||'') + ')',
+        type: (r.PaidStatus === 'Paid') ? 'credit' : 'debit',
+        amount: parseFloat(r.Amount) || 0
+      };
+    });
+    renderBalance();
+  }).catch(function(e){ console.warn('Maintenance load error:', e); });
+}
+
+var currentPage='home';
+var currentSub=null;
+var balanceEntries=[];
+var calDate=new Date(2026,2,1);
+
+var teluguEvents={
+  '2026-3-30':'Ugadi 2026 🌸',
+  '2026-4-14':'Sri Rama Navami 🪷',
+  '2026-4-29':'Hanuman Jayanti',
+  '2026-5-9':'Parashurama Jayanti',
+  '2026-6-6':'Vat Purnima',
+  '2026-8-9':'Raksha Bandhan',
+  '2026-8-16':'Krishna Janmashtami 🎺',
+  '2026-9-4':'Vinayaka Chavithi 🐘',
+  '2026-10-1':'Dussehra / Navratri begins 🎊',
+  '2026-10-20':'Diwali 🪔',
+  '2026-11-1':'Kartika Pournami',
+  '2026-1-14':'Sankranti 🪁'
+};
+
+function showPage(page, sub){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(l){l.classList.remove('active');});
+
+  currentPage=page; currentSub=sub||null;
+
+  if(page==='maintenance'&&(!sub||sub==='current'))loadMaintenance();
+  if(page==='maintenance'){
+    var mainTitle=document.getElementById('maint-sub-title');
+    var overviewDiv=document.getElementById('maint-overview');
+    var currentDiv=document.getElementById('maint-current-section');
+    if(sub==='current'){
+      mainTitle.textContent='Current Month Maintenance — March 2026';
+      overviewDiv.style.display='none';
+      currentDiv.style.display='block';
+      renderBalance();
+    } else {
+      var labels={'housekeeping':'Housekeeping & Cleaning','water':'Water Supply & Plumbing','electrical':'Electrical & Power Backup','safety':'Safety & Security','pest':'Pest Control','landscaping':'Landscaping & Common Areas','appliance':'Appliance & Fixture Repairs','inspection':'General Inspection / Preventive Maintenance'};
+      mainTitle.textContent=labels[sub]||'Maintenance Overview';
+      overviewDiv.style.display='block';
+      currentDiv.style.display='none';
+    }
+  }
+
+  loadEvents();
+  if(page==='events'){
+    var el=document.getElementById('events-sub-title');
+    var labels={'community':'Community Gatherings','festivals':'Festivals & Cultural','sports':'Sports & Fitness','workshops':'Workshops & Classes','children':'Children\'s Activities','announcements':'Announcements','clubhouse':'Clubhouse Events','charity':'Charity & Volunteering','seasonal':'Seasonal Celebrations','committees':'Resident Committees'};
+    el.textContent=labels[sub]||'All Upcoming Events';
+    renderCalendar();
+    renderEventsList(sub);
+  }
+
+  if(page==='meetings'){
+    var ml=document.getElementById('meetings-sub-title');
+    ml.textContent=sub==='upcoming'?'Upcoming Meetings':'Recent Meetings';
+    if(sub==='upcoming'){
+      document.getElementById('recent-meetings').style.display='none';
+      document.getElementById('upcoming-meetings').style.display='block';
+      document.querySelectorAll('#page-meetings .tab-btn')[1].classList.add('active');
+      document.querySelectorAll('#page-meetings .tab-btn')[0].classList.remove('active');
+    } else {
+      document.getElementById('recent-meetings').style.display='block';
+      document.getElementById('upcoming-meetings').style.display='none';
+    }
+  }
+
+  if(page==='funds'){
+    var fl=document.getElementById('funds-sub-title');
+    var flabels={'vinayaka-col':'Vinayaka Chavithi Collection','diwali-col':'Diwali Collection','other-col':'Other Festival Collections','vinayaka-exp':'Vinayaka Chavithi Expenses','diwali-exp':'Diwali Expenses','other-exp':'Other Festival Expenses','community':'Other Community Funds','reserve':'Maintenance Reserve Fund','emergency':'Emergency / Contingency Fund','charity':'Charity & Social Causes','reports':'Fund Utilisation Reports'};
+    fl.textContent=flabels[sub]||'Fund Overview';
+  }
+
+  loadContacts();
+  if(page==='contacts'){
+    var cl=document.getElementById('contacts-sub-title');
+    var clabels={'watchman':'Watchman / Security','electrician':'Electrician','plumber':'Plumber','carpenter':'Carpenter','housekeeping':'Housekeeping Staff','gardener':'Gardener / Landscaping','pestcontrol':'Pest Control','lift':'Lift / Elevator Service','generator':'Generator / Power Backup','emergency':'Emergency Numbers','committee':'Committee Members'};
+    cl.textContent=clabels[sub]||'All Contacts';
+  }
+
+  if(page==='president'){
+    var pl=document.getElementById('president-sub-title');
+    var plabels={'current':'Present President','past':'Past Presidents','next':'Next President','election':'Election Details'};
+    pl.textContent=plabels[sub]||'President';
+  }
+
+  loadUpdates();
+  if(page==='updates'){
+    var ul=document.getElementById('updates-sub-title');
+    var ulabels={'general':'General Announcements','maintenance':'Maintenance Updates','events':'Event Updates','funds':'Funds & Finance Updates','committee':'Committee Updates','safety':'Safety & Security Updates','renovation':'Project / Renovation Updates','newsletter':'Newsletter'};
+    ul.textContent=ulabels[sub]||'All Updates';
+  }
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchMeetTab(btn, tabId){
+  document.querySelectorAll('#page-meetings .tab-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('recent-meetings').style.display=tabId==='recent-meetings'?'block':'none';
+  document.getElementById('upcoming-meetings').style.display=tabId==='upcoming-meetings'?'block':'none';
+}
+
+// ── CALENDAR ──
+function renderCalendar(){
+  var grid=document.getElementById('calendar-grid');
+  var label=document.getElementById('cal-month-label');
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  label.textContent=months[calDate.getMonth()]+' '+calDate.getFullYear();
+  grid.innerHTML='';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d){
+    var el=document.createElement('div');el.className='cal-day-label';el.textContent=d;grid.appendChild(el);
+  });
+  var first=new Date(calDate.getFullYear(),calDate.getMonth(),1).getDay();
+  var days=new Date(calDate.getFullYear(),calDate.getMonth()+1,0).getDate();
+  var today=new Date();
+  for(var i=0;i<first;i++){var bl=document.createElement('div');bl.className='cal-day other-month';grid.appendChild(bl);}
+  for(var d=1;d<=days;d++){
+    var el=document.createElement('div');el.className='cal-day';
+    var key=calDate.getFullYear()+'-'+(calDate.getMonth()+1)+'-'+d;
+    if(teluguEvents[key])el.classList.add('has-event');
+    if(calDate.getFullYear()===today.getFullYear()&&calDate.getMonth()===today.getMonth()&&d===today.getDate())el.classList.add('today');
+    el.textContent=d;grid.appendChild(el);
+  }
+}
+
+function changeMonth(dir){calDate.setMonth(calDate.getMonth()+dir);renderCalendar();}
+
+function renderEventsList(filter){
+  var list=document.getElementById('events-list');
+  var allEvents=[
+    {date:'30 March 2026',name:'Ugadi Habba 2026 🌸',cat:'festivals',tag:'Festival',color:'#FEF3E2',tc:'#8B5E00'},
+    {date:'14 April 2026',name:'Sri Rama Navami 🪷',cat:'festivals',tag:'Cultural',color:'#E6F4EC',tc:'#1E6E3A'},
+    {date:'29 April 2026',name:'Hanuman Jayanti',cat:'festivals',tag:'Festival',color:'#FEF3E2',tc:'#8B5E00'},
+    {date:'16 August 2026',name:'Krishna Janmashtami 🎺',cat:'festivals',tag:'Festival',color:'#FEF3E2',tc:'#8B5E00'},
+    {date:'4 September 2026',name:'Vinayaka Chavithi 🐘',cat:'community',tag:'Community',color:'#EEF2FF',tc:'#3730A3'},
+    {date:'20 October 2026',name:'Diwali 🪔',cat:'seasonal',tag:'Seasonal',color:'#FFFBEB',tc:'#92400E'},
+    {date:'20 April 2026',name:'Monthly Committee Meeting',cat:'committees',tag:'Meeting',color:'#EEF2FF',tc:'#3730A3'},
+    {date:'15 May 2026',name:'Summer Kids Sports Day 🏏',cat:'sports',tag:'Sports',color:'#F0FFF4',tc:'#065F46'},
+  ];
+  var filtered=filter?allEvents.filter(function(e){return e.cat===filter;}):allEvents;
+  list.innerHTML=filtered.length===0?'<p style="color:var(--text-soft);font-size:13px;">No events in this category yet.</p>':filtered.map(function(e){
+    return '<div class="event-item"><div class="event-info" style="padding:0;"><h4>'+e.name+'</h4><p>'+e.date+'</p><span class="event-tag" style="background:'+e.color+';color:'+e.tc+';">'+e.tag+'</span></div></div>';
+  }).join('');
+}
+
+// ── BALANCE SHEET ──
+function addEntry(){
+  var date=document.getElementById('entry-date').value;
+  var desc=document.getElementById('entry-desc').value.trim();
+  var type=document.getElementById('entry-type').value;
+  var amt=parseFloat(document.getElementById('entry-amount').value);
+  if(!date||!desc||isNaN(amt)||amt<=0){showToast('Please fill all fields correctly.');return;}
+  balanceEntries.push({date:date,desc:desc,type:type,amount:amt});
+  document.getElementById('entry-date').value='';
+  document.getElementById('entry-desc').value='';
+  document.getElementById('entry-amount').value='';
+  renderBalance();
+  showToast('Entry added!');
+}
+
+function renderBalance(){
+  var tbody=document.getElementById('balance-tbody');
+  var runBal=0,totalCredit=0,totalDebit=0;
+  tbody.innerHTML=balanceEntries.length===0?'<tr><td colspan="8" style="text-align:center;color:var(--text-soft);padding:24px;">No entries yet. Add entries above or upload an Excel file.</td></tr>':
+  balanceEntries.map(function(e,i){
+    if(e.type==='credit'){runBal+=e.amount;totalCredit+=e.amount;}else{runBal-=e.amount;totalDebit+=e.amount;}
+    return '<tr><td>'+(i+1)+'</td><td>'+e.date+'</td><td>'+e.desc+'</td><td><span class="maint-status '+(e.type==='credit'?'status-ok':'status-urgent')+'">'+e.type.charAt(0).toUpperCase()+e.type.slice(1)+'</span></td>'+(e.type==='credit'?'<td class="amount-credit">₹'+e.amount.toLocaleString('en-IN')+'</td><td>—</td>':'<td>—</td><td class="amount-debit">₹'+e.amount.toLocaleString('en-IN')+'</td>')+'<td class="amount-balance">₹'+runBal.toLocaleString('en-IN')+'</td><td><button onclick="removeEntry('+i+')" style="background:none;border:none;cursor:pointer;color:#9B2020;font-size:16px;">×</button></td></tr>';
+  }).join('');
+  var finalCredit=0,finalDebit=0,finalBal=0;
+  balanceEntries.forEach(function(e){if(e.type==='credit'){finalCredit+=e.amount;finalBal+=e.amount;}else{finalDebit+=e.amount;finalBal-=e.amount;}});
+  document.getElementById('total-credit').textContent=finalCredit>0?'₹'+finalCredit.toLocaleString('en-IN'):'—';
+  document.getElementById('total-debit').textContent=finalDebit>0?'₹'+finalDebit.toLocaleString('en-IN'):'—';
+  document.getElementById('total-balance').textContent='₹'+finalBal.toLocaleString('en-IN');
+}
+
+function removeEntry(i){balanceEntries.splice(i,1);renderBalance();}
+
+function handleExcelUpload(input){
+  if(input.files&&input.files[0]){
+    var name=input.files[0].name;
+    balanceEntries=[
+      {date:'2026-03-01',desc:'Flat A-101 Maintenance',type:'credit',amount:1500},
+      {date:'2026-03-01',desc:'Flat A-102 Maintenance',type:'credit',amount:1500},
+      {date:'2026-03-02',desc:'Flat B-201 Maintenance',type:'credit',amount:1500},
+      {date:'2026-03-03',desc:'Housekeeping Staff Salary',type:'debit',amount:4500},
+      {date:'2026-03-05',desc:'Electricity Bill — Common Areas',type:'debit',amount:3200},
+      {date:'2026-03-10',desc:'Flat C-301 Maintenance',type:'credit',amount:1500},
+    ];
+    renderBalance();
+    showToast('Excel uploaded: '+name+' — Sample data loaded!');
+  }
+}
+
+function exportTable(){
+  var rows=[['#','Date','Description','Type','Credit','Debit','Balance']];
+  var bal=0;
+  balanceEntries.forEach(function(e,i){
+    if(e.type==='credit')bal+=e.amount;else bal-=e.amount;
+    rows.push([i+1,e.date,e.desc,e.type,e.type==='credit'?e.amount:'',e.type==='debit'?e.amount:'',bal]);
+  });
+  var csv=rows.map(function(r){return r.join(',');}).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='maintenance-balance-march-2026.csv';a.click();
+  showToast('Balance sheet exported!');
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  setTimeout(function(){t.style.display='none';},3000);
+}
+
+
+
+
+// ══════════════════════════════════════════
+//  AUTH — Login / Register / Logout
+// ══════════════════════════════════════════
+
+var currentUser = null;
+var currentUserProfile = null;
+
+function authMsg(text, type) {
+  var el = document.getElementById('auth-msg');
+  el.textContent = text;
+  el.className = 'auth-msg' + (type ? ' show ' + type : '');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('login-form').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.querySelectorAll('.auth-tab').forEach(function(t, i) {
+    t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='register'));
+  });
+  authMsg('', '');
+}
+
+function checkSession() {
+  try {
+    var saved = localStorage.getItem('stn_session');
+    if (saved) {
+      var session = JSON.parse(saved);
+      var now = Math.floor(Date.now() / 1000);
+      if (session && session.access_token && session.expires_at > now) {
+        currentUser = session.user;
+        fetchUserProfile(session.access_token);
+        return;
+      }
+      localStorage.removeItem('stn_session');
+    }
+  } catch(e) { localStorage.removeItem('stn_session'); }
+  // Show auth page
+  document.getElementById('auth-page').style.display = 'flex';
+  hideSiteContent();
+}
+
+function hideSiteContent() {
+  document.querySelector('.banner') && (document.querySelector('.banner').style.display = 'none');
+  document.querySelector('nav')     && (document.querySelector('nav').style.display = 'none');
+  document.querySelector('main')    && (document.querySelector('main').style.display = 'none');
+  document.querySelector('footer')  && (document.querySelector('footer').style.display = 'none');
+  document.getElementById('user-bar').style.display = 'none';
+}
+
+function showSiteContent() {
+  document.getElementById('auth-page').style.display = 'none';
+  document.querySelector('.banner') && (document.querySelector('.banner').style.display = '');
+  document.querySelector('nav')     && (document.querySelector('nav').style.display = '');
+  document.querySelector('main')    && (document.querySelector('main').style.display = '');
+  document.querySelector('footer')  && (document.querySelector('footer').style.display = '');
+  document.getElementById('user-bar').style.display = 'flex';
+}
+
+function fetchUserProfile(token) {
+  if (!currentUser) return;
+  fetch(SUPABASE_URL + '/rest/v1/residents?email=eq.' + encodeURIComponent(currentUser.email) + '&select=*&limit=1', {
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + token }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    currentUserProfile = (rows && rows.length > 0) ? rows[0] : null;
+    onLoginSuccess(token);
+  })
+  .catch(function() { onLoginSuccess(token); });
+}
+
+function onLoginSuccess(token) {
+  showSiteContent();
+
+  // Priority: 1) residents table Name  2) Supabase user_metadata full_name  3) display_name  4) email prefix
+  var metaName = '';
+  if (currentUser && currentUser.user_metadata) {
+    metaName = currentUser.user_metadata.full_name
+            || currentUser.user_metadata.name
+            || currentUser.user_metadata.Full_Name
+            || '';
+  }
+  // Capitalise first letter of each word nicely
+  function titleCase(str) {
+    if (!str) return '';
+    return str.replace(/\w\S*/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+  }
+
+  var rawName = (currentUserProfile && (currentUserProfile.name || currentUserProfile.Name))
+             || metaName
+             || (currentUser.email ? currentUser.email.split('@')[0] : 'Resident');
+
+  var name = titleCase(rawName);
+  var flat = (currentUserProfile && (currentUserProfile.flat_no || currentUserProfile.FlatNo)) || '—';
+  var role = (currentUserProfile && (currentUserProfile.role || currentUserProfile.Role)) || 'resident';
+
+  document.getElementById('ub-name').textContent = name;
+  document.getElementById('ub-flat').textContent = flat;
+  var badge = document.getElementById('ub-role-badge');
+  badge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+  badge.className = 'role-badge ' + (role === 'admin' ? 'role-admin' : 'role-resident');
+  authMsg('', '');
+}
+
+function doLogin() {
+  var email    = document.getElementById('login-email').value.trim();
+  var password = document.getElementById('login-password').value;
+  var btn      = document.getElementById('login-btn');
+
+  if (!email || !email.includes('@')) { authMsg('Please enter a valid email address.', 'error'); return; }
+  if (!password)                       { authMsg('Please enter your password.', 'error'); return; }
+
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  authMsg('Verifying your credentials...', 'info');
+
+  fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.disabled = false; btn.textContent = 'Sign In to Portal';
+    if (data.access_token) {
+      currentUser = data.user;
+      localStorage.setItem('stn_session', JSON.stringify({
+        access_token: data.access_token, user: data.user,
+        expires_at: Math.floor(Date.now()/1000) + (data.expires_in || 3600)
+      }));
+      fetchUserProfile(data.access_token);
+    } else {
+      var msg = data.error_description || data.msg || 'Invalid email or password.';
+      if (msg.includes('Invalid login'))       msg = 'Incorrect email or password. Please try again.';
+      if (msg.includes('Email not confirmed')) msg = 'Please verify your email first. Check your inbox.';
+      authMsg(msg, 'error');
+    }
+  })
+  .catch(function() {
+    btn.disabled = false; btn.textContent = 'Sign In to Portal';
+    authMsg('Connection error. Please check your internet and try again.', 'error');
+  });
+}
+
+function doRegister() {
+  var name     = document.getElementById('reg-name').value.trim();
+  var flat     = document.getElementById('reg-flat').value.trim();
+  var email    = document.getElementById('reg-email').value.trim();
+  var phone    = document.getElementById('reg-phone').value.trim();
+  var password = document.getElementById('reg-password').value;
+  var confirm  = document.getElementById('reg-confirm').value;
+  var btn      = document.getElementById('register-btn');
+
+  if (!name)                { authMsg('Please enter your full name.', 'error'); return; }
+  if (!flat)                { authMsg('Please enter your flat number.', 'error'); return; }
+  if (!email.includes('@')) { authMsg('Please enter a valid email address.', 'error'); return; }
+  if (phone.length < 10)   { authMsg('Please enter a valid 10-digit phone number.', 'error'); return; }
+  if (password.length < 6) { authMsg('Password must be at least 6 characters.', 'error'); return; }
+  if (password !== confirm) { authMsg('Passwords do not match.', 'error'); return; }
+
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  authMsg('Registering your account...', 'info');
+
+  fetch(SUPABASE_URL + '/auth/v1/signup', {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password,
+      data: { full_name: name, flat_no: flat, phone: phone } })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.disabled = false; btn.textContent = 'Create My Account';
+    if (data.id || (data.user && data.user.id)) {
+      sheetsInsert('Residents', {
+        FlatNo: flat, Name: name, Email: email, Phone: phone,
+        Role: 'resident', CreatedAt: new Date().toISOString().split('T')[0]
+      }).catch(function(){});
+      authMsg('Account created! Check your email (' + email + ') for a verification link, then sign in.', 'success');
+      setTimeout(function() { switchAuthTab('login'); }, 3500);
+    } else {
+      var msg = data.error_description || data.msg || data.message || 'Registration failed.';
+      if (msg.includes('already registered')) msg = 'This email is already registered. Please sign in.';
+      authMsg(msg, 'error');
+    }
+  })
+  .catch(function() {
+    btn.disabled = false; btn.textContent = 'Create My Account';
+    authMsg('Connection error. Please try again.', 'error');
+  });
+}
+
+function doForgotPassword() {
+  var email = document.getElementById('login-email').value.trim();
+  if (!email || !email.includes('@')) {
+    authMsg('Enter your email address in the field above, then click Forgot password.', 'info'); return;
+  }
+  authMsg('Sending reset link to ' + email + '...', 'info');
+  fetch(SUPABASE_URL + '/auth/v1/recover', {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email })
+  })
+  .then(function() { authMsg('Password reset link sent! Check your inbox.', 'success'); })
+  .catch(function() { authMsg('Could not send reset email. Please try again.', 'error'); });
+}
+
+function doLogout() {
+  try {
+    var s = JSON.parse(localStorage.getItem('stn_session') || '{}');
+    if (s.access_token) {
+      fetch(SUPABASE_URL + '/auth/v1/logout', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + s.access_token }
+      }).catch(function(){});
+    }
+  } catch(e) {}
+  localStorage.removeItem('stn_session');
+  currentUser = null; currentUserProfile = null;
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+  hideSiteContent();
+  document.getElementById('auth-page').style.display = 'flex';
+  switchAuthTab('login');
+  showPage('home');
+}
+
+
+// Init
+checkSession();
+loadContacts();
+loadEvents();
+loadUpdates();
+renderCalendar();
+renderEventsList(null);
+renderBalance();
+</script>
+</body>
+</html>

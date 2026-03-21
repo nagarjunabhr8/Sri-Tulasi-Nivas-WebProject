@@ -1,0 +1,34 @@
+# Maven / Java
+backend/target/
+backend/.mvn/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.suo
+*.user
+
+# Node / React
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment / secrets — do NOT commit real credentials
+# application-local.yml is committed since it uses env var placeholders
+# but keep any .env files out
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db

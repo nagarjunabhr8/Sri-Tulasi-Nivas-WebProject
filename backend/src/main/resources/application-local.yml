@@ -1,0 +1,30 @@
+# Local development profile - uses Docker PostgreSQL with password auth
+spring:
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:sri_tulasi_nivas}?TimeZone=UTC
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:3002
+
+jwt:
+  secret: sri-tulasi-nivas-local-dev-secret-key-minimum-64-chars-required-for-hs512-algorithm
+
+# ─── WhatsApp via Google Apps Script + CallMeBot (completely free) ───────────
+# Setup steps:
+#   1. Open google-apps-script/WhatsAppRelay.gs  in this project
+#   2. Go to https://script.google.com → New project → paste the file contents
+#   3. Deploy as Web App (Execute as: Me, Access: Anyone) → copy the URL
+#   4. Paste that URL below (replace the empty string after the colon)
+#   5. Each resident must WhatsApp  +34 644 82 70 37  with:
+#        "I allow callmebot to send me messages"
+#      and store the 6-digit reply key in their profile (Residents page)
+google:
+  apps-script:
+    whatsapp-url: https://script.google.com/macros/s/AKfycbwBLDnVmsHxjWVptR1wAmN8XXFLw2ltD-wYzrKjiGIVrTqLQ5aaEajx_5-h5v5ACfrO/exec
