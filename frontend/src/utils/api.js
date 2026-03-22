@@ -1,8 +1,20 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
+// Use env var only if it won't cause mixed content (HTTP url on an HTTPS page)
+const resolveBaseURL = () => {
+  const envUrl = process.env.REACT_APP_API_BASE_URL;
+  if (!envUrl) return '/api';
+  if (typeof window !== 'undefined' &&
+      window.location.protocol === 'https:' &&
+      envUrl.startsWith('http://')) {
+    return '/api'; // fall back to Vercel proxy to avoid mixed-content blocking
+  }
+  return envUrl;
+};
+
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL || '/api',
+  baseURL: resolveBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
