@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/payments")
-@CrossOrigin(origins = {"http://localhost:3000", "https://qualitycrafted.live"})
+
 public class PaymentController {
 
     @Autowired
