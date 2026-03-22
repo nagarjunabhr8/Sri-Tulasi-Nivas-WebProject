@@ -37,8 +37,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
-      window.location.replace('/auth');
+      // Don't redirect if the 401 came from the auth endpoints themselves
+      // (e.g. bad credentials on login) — let the form show the error instead
+      const url = error.config?.url || '';
+      const isAuthEndpoint = url.includes('/auth/');
+      if (!isAuthEndpoint) {
+        useAuthStore.getState().logout();
+        window.location.replace('/auth');
+      }
     }
     return Promise.reject(error);
   }
