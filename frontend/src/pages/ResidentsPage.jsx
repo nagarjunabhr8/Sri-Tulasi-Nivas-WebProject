@@ -163,7 +163,9 @@ const ResidentsPage = () => {
                     {r.whatsappApiKey ? '✅' : <span style={{color:'#bbb'}}>—</span>}
                   </td>
                   <td className="action-cell">
-                    <button className="btn-edit" onClick={() => startEdit(r)}>Edit</button>
+                    {(isAdmin || currentUser?.id === r.id) && (
+                      <button className="btn-edit" onClick={() => startEdit(r)}>Edit</button>
+                    )}
                     {isAdmin && (
                       <button className="btn-delete" onClick={() => deleteResident(r.id, `${r.firstName} ${r.lastName}`)}>Delete</button>
                     )}

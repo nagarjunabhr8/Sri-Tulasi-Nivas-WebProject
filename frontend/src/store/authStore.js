@@ -37,14 +37,8 @@ export const useAuthStore = create(
       register: async (userData) => {
         set({ isLoading: true });
         try {
-          const response = await api.post('/auth/register', userData);
-          set({
-            user: response.data,
-            token: response.data.token,
-            error: null,
-          });
-          localStorage.setItem('token', response.data.token);
-          return response.data;
+          await api.post('/auth/register', userData);
+          set({ error: null });
         } catch (error) {
           set({ error: error.response?.data?.message || 'Registration failed' });
           throw error;

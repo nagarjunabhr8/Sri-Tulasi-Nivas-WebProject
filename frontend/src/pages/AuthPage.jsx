@@ -34,20 +34,29 @@ const AuthPage = () => {
     confirmPassword: '',
   });
   const [regErrors, setRegErrors] = useState({});
+  const [regSuccess, setRegSuccess] = useState(false);
+  const [showSignInPwd, setShowSignInPwd] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   const switchTab = (t) => {
     clearError();
     setSignInErrors({});
     setRegErrors({});
+    setRegSuccess(false);
+    setShowPwd(false);
+    setShowConfirmPwd(false);
+    setShowSignInPwd(false);
     setTab(t);
   };
 
   /* ───────── Validation ───────── */
   const validateSignIn = () => {
     const errs = {};
-    if (!signIn.email.trim()) errs.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(signIn.email)) errs.email = 'Enter a valid email';
+    if (!signIn.email.trim()) errs.email = 'Email address is required';
+    else if (!/\S+@\S+\.\S+/.test(signIn.email)) errs.email = 'Enter a valid email address';
     if (!signIn.password) errs.password = 'Password is required';
+    else if (signIn.password.length < 6) errs.password = 'Password must be at least 6 characters';
     return errs;
   };
 
@@ -103,7 +112,9 @@ const AuthPage = () => {
         role: reg.role,
         flatNo: reg.flatNo,
       });
-      // Navigation handled automatically by App.jsx conditional rendering
+      // Clear form and show success message instead of auto-login
+      setReg({ fullName: '', flatNo: '', email: '', phone: '', role: '', password: '', confirmPassword: '' });
+      setRegSuccess(true);
     } catch {
       // error shown from store
     }
@@ -143,10 +154,18 @@ const AuthPage = () => {
           </button>
         </div>
 
-        {/* Global error from store */}
+        {/* Global error / success banners */}
         {error && (
           <div className="auth-error-banner" onClick={clearError}>
             {error}
+          </div>
+        )}
+        {regSuccess && tab === 'register' && (
+          <div className="auth-success-banner">
+            ✅ Successfully Registered! Please Sign In to access the portal.
+            <button type="button" onClick={() => { setRegSuccess(false); switchTab('signin'); }}>
+              Sign In now →
+            </button>
           </div>
         )}
 
@@ -166,12 +185,17 @@ const AuthPage = () => {
 
             <div className="auth-field">
               <label>PASSWORD</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={signIn.password}
-                onChange={(e) => setSignIn({ ...signIn, password: e.target.value })}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showSignInPwd ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={signIn.password}
+                  onChange={(e) => setSignIn({ ...signIn, password: e.target.value })}
+                />
+                <button type="button" className="password-toggle-btn" onClick={() => setShowSignInPwd(v => !v)} aria-label="Toggle password visibility">
+                  {showSignInPwd ? '🙈' : '👁'}
+                </button>
+              </div>
               {signInErrors.password && <span className="field-error">{signInErrors.password}</span>}
             </div>
 
@@ -259,22 +283,32 @@ const AuthPage = () => {
             <div className="auth-field-row">
               <div className="auth-field">
                 <label>PASSWORD</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={reg.password}
-                  onChange={(e) => setReg({ ...reg, password: e.target.value })}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showPwd ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={reg.password}
+                    onChange={(e) => setReg({ ...reg, password: e.target.value })}
+                  />
+                  <button type="button" className="password-toggle-btn" onClick={() => setShowPwd(v => !v)} aria-label="Toggle password visibility">
+                    {showPwd ? '🙈' : '👁'}
+                  </button>
+                </div>
                 {regErrors.password && <span className="field-error">{regErrors.password}</span>}
               </div>
               <div className="auth-field">
                 <label>CONFIRM PASSWORD</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={reg.confirmPassword}
-                  onChange={(e) => setReg({ ...reg, confirmPassword: e.target.value })}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    type={showConfirmPwd ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={reg.confirmPassword}
+                    onChange={(e) => setReg({ ...reg, confirmPassword: e.target.value })}
+                  />
+                  <button type="button" className="password-toggle-btn" onClick={() => setShowConfirmPwd(v => !v)} aria-label="Toggle confirm password visibility">
+                    {showConfirmPwd ? '🙈' : '👁'}
+                  </button>
+                </div>
                 {regErrors.confirmPassword && <span className="field-error">{regErrors.confirmPassword}</span>}
               </div>
             </div>
