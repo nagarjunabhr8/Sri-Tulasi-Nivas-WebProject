@@ -135,7 +135,7 @@ const AuthPage = () => {
         <div className="auth-brand">
           <div className="auth-brand-icon">🏛️</div>
           <h1 className="auth-brand-title">Sri Tulasi Nivas</h1>
-          <p className="auth-brand-sub">RESIDENTS' PORTAL · HYDERABAD</p>
+          <p className="auth-brand-sub">RESIDENT'S PORTAL - HYDERABAD</p>
         </div>
 
         {/* Tab switcher */}
