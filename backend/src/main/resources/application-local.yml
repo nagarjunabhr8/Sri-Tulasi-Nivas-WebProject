@@ -25,6 +25,22 @@ jwt:
 stripe:
   api-key: sk_test_placeholder
 
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  frontend-url: http://localhost:3000
+
 # ─── WhatsApp via Twilio ───────────────────────────────────────────────────
 # Get credentials from https://console.twilio.com
 # Residents must join the sandbox once: send "join <your-code>" to whatsapp:+14155238886

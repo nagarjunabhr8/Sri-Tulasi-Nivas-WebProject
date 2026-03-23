@@ -8,6 +8,8 @@ const Register = () => {
   const { register: registerUser, isLoading, error } = useAuthStore();
   const navigate = useNavigate();
   const [localError, setLocalError] = useState('');
+  const [registered, setRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const password = watch('password');
 
   const onSubmit = async (data) => {
@@ -21,11 +23,40 @@ const Register = () => {
         password: data.password,
         role: data.role,
       });
-      navigate('/dashboard');
+      setRegisteredEmail(data.email);
+      setRegistered(true);
     } catch (err) {
       setLocalError(err.response?.data?.message || 'Registration failed');
     }
   };
+
+  if (registered) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <h2 style={{ color: '#2c3e50' }}>Check Your Email</h2>
+          <div style={{
+            background: '#eafaf1', border: '1px solid #27ae60',
+            borderRadius: '8px', padding: '24px', margin: '20px 0'
+          }}>
+            <p style={{ color: '#27ae60', fontSize: '16px', margin: 0 }}>
+              ✓ Registration successful!
+            </p>
+          </div>
+          <p style={{ color: '#555', lineHeight: '1.6' }}>
+            We've sent a verification email to <strong>{registeredEmail}</strong>.<br />
+            Please click the link in the email to activate your account before logging in.
+          </p>
+          <p style={{ color: '#888', fontSize: '13px', marginTop: '16px' }}>
+            Didn't receive the email? Check your spam folder.
+          </p>
+          <a href="/auth" style={{ color: '#3498db', textDecoration: 'none', fontSize: '14px' }}>
+            Back to Login
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-container">

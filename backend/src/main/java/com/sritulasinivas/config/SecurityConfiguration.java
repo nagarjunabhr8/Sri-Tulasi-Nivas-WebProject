@@ -62,7 +62,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/auth/health").permitAll()
+                .requestMatchers(HttpMethod.GET, "/auth/health", "/auth/verify-email").permitAll()
                 .requestMatchers(HttpMethod.GET, "/apartments/public/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/events/interested").permitAll()
                 .anyRequest().authenticated()
