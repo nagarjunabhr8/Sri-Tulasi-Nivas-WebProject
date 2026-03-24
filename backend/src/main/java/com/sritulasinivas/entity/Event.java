@@ -41,6 +41,12 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus status;
 
+    @Column(length = 500)
+    private String festivalLink;
+
+    @Column
+    private String initiatedBy;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private Set<EventContribution> contributions = new HashSet<>();
 

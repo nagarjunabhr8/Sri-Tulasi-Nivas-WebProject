@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/residents")
@@ -21,6 +23,21 @@ public class ResidentController {
     @GetMapping
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    @GetMapping("/phones")
+    public ResponseEntity<List<Map<String, String>>> getPhones() {
+        List<Map<String, String>> phones = userRepository.findAllByIsActiveTrue().stream()
+            .filter(u -> u.getPhone() != null && !u.getPhone().isBlank())
+            .map(u -> {
+                Map<String, String> m = new LinkedHashMap<>();
+                m.put("name", u.getFirstName() + " " + u.getLastName());
+                m.put("phone", u.getPhone());
+                m.put("flatNo", u.getFlatNo() != null ? u.getFlatNo() : "");
+                return m;
+            })
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(phones);
     }
 
     @GetMapping("/{id}")

@@ -65,7 +65,7 @@ public class SecurityConfiguration {
                     "/auth/forgot-password", "/auth/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/auth/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/apartments/public/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/events/interested").permitAll()
+                .requestMatchers(HttpMethod.GET, "/events/public/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
 
+const RSVP_OPTIONS = [
+  { value: 'INTERESTED',     label: 'Interested',     emoji: '✅', bg: '#dcfce7', border: '#22c55e', text: '#166534' },
+  { value: 'NOT_INTERESTED', label: 'Not Interested', emoji: '❌', bg: '#fee2e2', border: '#ef4444', text: '#991b1b' },
+  { value: 'NOT_AVAILABLE',  label: 'Not Available',  emoji: '🚫', bg: '#ffedd5', border: '#f97316', text: '#9a3412' },
+  { value: 'OTHER_PLANS',    label: 'Other Plans',    emoji: '📅', bg: '#dbeafe', border: '#3b82f6', text: '#1e40af' },
+];
+
+const formatDate = (dateStr) =>
+  new Date(dateStr).toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+
 const EventDetail = () => {
   const { id } = useParams();
-  const stripe = useStripe();
-  const elements = useElements();
   const { user } = useAuthStore();
-  const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [amount, setAmount] = useState('');
-  const [processing, setProcessing] = useState(false);
+  const [event, setEvent]         = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState('');
+  const [rsvpLoading, setRsvpLoading] = useState(false);
 
   useEffect(() => {
     fetchEvent();
@@ -21,136 +29,117 @@ const EventDetail = () => {
 
   const fetchEvent = async () => {
     try {
-      const response = await api.get(`/events/${id}`);
-      setEvent(response.data);
-    } catch (err) {
-      setError('Failed to load event');
+      const res = await api.get(`/events/${id}`);
+      setEvent(res.data);
+    } catch {
+      setError('Event not found or failed to load.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleContribute = async (e) => {
-    e.preventDefault();
-
-    if (!user) {
-      setError('Please log in to contribute');
-      return;
-    }
-
-    if (!stripe || !elements || !amount) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    setProcessing(true);
-
+  const handleRsvp = async (status) => {
+    setRsvpLoading(true);
     try {
-      // Create payment intent
-      const intentResponse = await api.post('/payments/create-intent', null, {
-        params: {
-          userId: user.id,
-          eventId: id,
-          amount: parseFloat(amount),
-        },
-      });
-
-      const { clientSecret } = intentResponse.data;
-
-      // Confirm payment
-      const cardElement = elements.getElement(CardElement);
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: { name: user.firstName },
-        },
-      });
-
-      if (result.error) {
-        setError(result.error.message);
-      } else {
-        setError('');
-        setAmount('');
-        alert('Thank you for your contribution!');
-        fetchEvent();
-      }
-    } catch (err) {
-      setError(err.response?.data?.error || 'Payment failed');
+      const res = await api.post(`/events/${id}/rsvp`, { rsvpStatus: status });
+      setEvent(res.data);
+    } catch {
+      // silent
     } finally {
-      setProcessing(false);
+      setRsvpLoading(false);
     }
   };
 
-  if (loading) return <div className="container"><p>Loading event...</p></div>;
-  if (!event) return <div className="container"><p>Event not found</p></div>;
+  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading event…</div>;
+  if (!event)  return (
+    <div style={{ padding: 40, textAlign: 'center' }}>
+      <p>{error || 'Event not found.'}</p>
+      <Link to="/events" style={{ color: '#b45309' }}>← Back to Events</Link>
+    </div>
+  );
 
-  const progress = (event.totalContributed / event.estimatedBudget) * 100;
+  const counts = event.rsvpCounts || {};
 
   return (
-    <div className="container event-detail">
-      <h1>{event.title}</h1>
+    <div style={{ maxWidth: 720, margin: '0 auto', padding: '28px 20px' }}>
+      <Link to="/events" style={{ color: '#b45309', fontSize: 14, textDecoration: 'none' }}>← Back to Events</Link>
 
-      {error && <div className="error-message">{error}</div>}
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginTop: 16, marginBottom: 8 }}>{event.title}</h1>
 
-      <div className="event-detail-content">
-        <div className="event-info">
-          <p><strong>Date:</strong> {new Date(event.eventDate).toLocaleDateString()}</p>
-          <p><strong>Location:</strong> {event.location}</p>
-          <p><strong>Status:</strong> {event.status}</p>
-          <p><strong>Description:</strong> {event.description}</p>
+      {error && <div style={{ background: '#fee2e2', color: '#991b1b', borderRadius: 8, padding: '10px 14px', marginBottom: 14 }}>{error}</div>}
 
-          <div className="progress-section">
-            <h3>Fundraising Progress</h3>
-            <div className="progress-bar">
-              <div className="progress" style={{ width: `${Math.min(progress, 100)}%` }}></div>
+      <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 15, color: '#555', marginBottom: 20 }}>
+        <span>📅 {formatDate(event.eventDate)}</span>
+        <span>📍 {event.location}</span>
+        {event.status && <span>📌 {event.status}</span>}
+        {event.initiatedBy && <span>👤 Organised by <strong>{event.initiatedBy}</strong></span>}
+      </div>
+
+      {event.description && (
+        <p style={{ fontSize: 16, lineHeight: 1.7, color: '#333', marginBottom: 24 }}>{event.description}</p>
+      )}
+
+      {event.festivalLink && (
+        <a href={event.festivalLink} target="_blank" rel="noopener noreferrer"
+          style={{ display: 'inline-block', marginBottom: 24, color: '#b45309', fontSize: 14, fontWeight: 500 }}>
+          🔗 Learn about this festival
+        </a>
+      )}
+
+      {/* RSVP */}
+      {user && (
+        <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+          <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 14 }}>Will you attend?</h3>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {RSVP_OPTIONS.map(opt => {
+              const selected = event.userRsvp === opt.value;
+              return (
+                <button key={opt.value} disabled={rsvpLoading}
+                  onClick={() => handleRsvp(opt.value)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '9px 16px', borderRadius: 24, fontSize: 14,
+                    cursor: 'pointer', transition: 'all 0.15s',
+                    background: selected ? opt.border : opt.bg,
+                    border: `2px solid ${opt.border}`,
+                    color: selected ? '#fff' : opt.text,
+                    fontWeight: selected ? 700 : 500,
+                  }}>
+                  {opt.emoji} {opt.label}
+                  {counts[opt.value] > 0 && (
+                    <span style={{ background: selected ? 'rgba(255,255,255,0.3)' : opt.border, color: '#fff', borderRadius: 999, padding: '1px 8px', fontSize: 12, fontWeight: 700 }}>
+                      {counts[opt.value]}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {event.userRsvp && (
+            <div style={{ marginTop: 12, fontSize: 14, color: '#555' }}>
+              Your response: <strong>{RSVP_OPTIONS.find(o => o.value === event.userRsvp)?.emoji} {RSVP_OPTIONS.find(o => o.value === event.userRsvp)?.label}</strong>
             </div>
-            <p>${event.totalContributed} raised of ${event.estimatedBudget}</p>
-            <p>Contributors: {event.contributionCount}</p>
+          )}
+        </div>
+      )}
+
+      {/* Attendance summary */}
+      {Object.values(counts).some(c => c > 0) && (
+        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 20 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>Attendance Summary</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+            {RSVP_OPTIONS.map(opt => (
+              <div key={opt.value} style={{ background: opt.bg, border: `1px solid ${opt.border}`, borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 20 }}>{opt.emoji}</span>
+                <div>
+                  <div style={{ fontSize: 13, color: opt.text, fontWeight: 600 }}>{opt.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: opt.text }}>{counts[opt.value] || 0}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {user && (
-          <div className="contribution-form">
-            <h3>Make a Contribution</h3>
-            <form onSubmit={handleContribute}>
-              <div className="form-group">
-                <label htmlFor="amount">Amount ($)</label>
-                <input
-                  id="amount"
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Card Details</label>
-                <CardElement
-                  options={{
-                    style: {
-                      base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                      },
-                    },
-                  }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn-primary"
-                disabled={processing || !stripe}
-              >
-                {processing ? 'Processing...' : 'Contribute Now'}
-              </button>
-            </form>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };
