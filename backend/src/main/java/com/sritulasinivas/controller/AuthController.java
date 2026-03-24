@@ -26,10 +26,11 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody java.util.Map<String, String> request) {
         try {
-            java.util.Map<String, String> result = authService.verifyEmail(token);
+            java.util.Map<String, String> result = authService.verifyOtp(
+                request.get("email"), request.get("otp"));
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return new ResponseEntity<>(java.util.Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);

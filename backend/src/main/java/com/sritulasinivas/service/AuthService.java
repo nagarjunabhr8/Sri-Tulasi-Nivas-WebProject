@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -47,7 +46,8 @@ public class AuthService {
             throw new RuntimeException("Phone number already registered");
         }
 
-        String verificationToken = UUID.randomUUID().toString();
+        String verificationToken = String.format("%06d",
+                new java.security.SecureRandom().nextInt(1_000_000));
 
         User user = new User();
         user.setFirstName(request.getFirstName());
@@ -61,11 +61,11 @@ public class AuthService {
         user.setIsActive(false);          // disabled until email is verified
         user.setEmailVerified(false);
         user.setVerificationToken(verificationToken);
-        user.setTokenExpiresAt(LocalDateTime.now().plusHours(24));
+        user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(10));
 
         User savedUser = userRepository.save(user);
 
-        emailService.sendVerificationEmail(savedUser.getEmail(), savedUser.getFirstName(), verificationToken);
+        emailService.sendOtpEmail(savedUser.getEmail(), savedUser.getFirstName(), verificationToken);
 
         // Return response without JWT — user must verify email before logging in
         return new AuthResponse(
@@ -80,16 +80,20 @@ public class AuthService {
     }
 
     @Transactional
-    public Map<String, String> verifyEmail(String token) {
-        User user = userRepository.findByVerificationToken(token)
-            .orElseThrow(() -> new RuntimeException("Invalid or expired verification link."));
-
-        if (user.getTokenExpiresAt() != null && LocalDateTime.now().isAfter(user.getTokenExpiresAt())) {
-            throw new RuntimeException("Verification link has expired. Please register again.");
-        }
+    public Map<String, String> verifyOtp(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found."));
 
         if (Boolean.TRUE.equals(user.getEmailVerified())) {
             return Map.of("message", "Email already verified. You can now log in.");
+        }
+
+        if (user.getVerificationToken() == null || !user.getVerificationToken().equals(otp)) {
+            throw new RuntimeException("Invalid OTP. Please check your email and try again.");
+        }
+
+        if (user.getTokenExpiresAt() != null && LocalDateTime.now().isAfter(user.getTokenExpiresAt())) {
+            throw new RuntimeException("OTP has expired. Please register again.");
         }
 
         user.setEmailVerified(true);

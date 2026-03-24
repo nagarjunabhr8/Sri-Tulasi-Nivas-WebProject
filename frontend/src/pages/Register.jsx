@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuthStore } from '../store/authStore';
+import api from '../utils/api';
 
 const Register = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
@@ -10,7 +11,27 @@ const Register = () => {
   const [localError, setLocalError] = useState('');
   const [registered, setRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [otpSuccess, setOtpSuccess] = useState(false);
   const password = watch('password');
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    if (otp.length !== 6) return;
+    setIsVerifying(true);
+    setOtpError('');
+    try {
+      await api.post('/auth/verify-otp', { email: registeredEmail, otp });
+      setOtpSuccess(true);
+      setTimeout(() => navigate('/auth'), 2500);
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -31,24 +52,72 @@ const Register = () => {
   };
 
   if (registered) {
+    if (otpSuccess) {
+      return (
+        <div className="auth-container">
+          <div className="auth-card" style={{ textAlign: 'center' }}>
+            <div style={{
+              background: '#eafaf1', border: '1px solid #27ae60',
+              borderRadius: '8px', padding: '28px', margin: '8px 0'
+            }}>
+              <p style={{ fontSize: '36px', margin: '0 0 8px 0' }}>✓</p>
+              <h2 style={{ color: '#27ae60', margin: '0 0 8px 0' }}>Email Verified!</h2>
+              <p style={{ color: '#555', margin: 0 }}>Redirecting to login...</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="auth-container">
         <div className="auth-card" style={{ textAlign: 'center' }}>
-          <h2 style={{ color: '#2c3e50' }}>Check Your Email</h2>
-          <div style={{
-            background: '#eafaf1', border: '1px solid #27ae60',
-            borderRadius: '8px', padding: '24px', margin: '20px 0'
-          }}>
-            <p style={{ color: '#27ae60', fontSize: '16px', margin: 0 }}>
-              ✓ Registration successful!
-            </p>
-          </div>
-          <p style={{ color: '#555', lineHeight: '1.6' }}>
-            We've sent a verification email to <strong>{registeredEmail}</strong>.<br />
-            Please click the link in the email to activate your account before logging in.
+          <h2 style={{ color: '#2c3e50', marginBottom: '8px' }}>Verify Your Email</h2>
+          <p style={{ color: '#555', marginBottom: '24px' }}>
+            We sent a <strong>6-digit code</strong> to<br />
+            <strong>{registeredEmail}</strong>
           </p>
-          <p style={{ color: '#888', fontSize: '13px', marginTop: '16px' }}>
-            Didn't receive the email? Check your spam folder.
+
+          {otpError && (
+            <div className="error-message" style={{ marginBottom: '16px' }}>{otpError}</div>
+          )}
+
+          <form onSubmit={handleOtpSubmit}>
+            <div className="form-group">
+              <label htmlFor="otp" style={{ textAlign: 'left', display: 'block' }}>
+                Enter 6-Digit Code
+              </label>
+              <input
+                id="otp"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={otp}
+                onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+                autoFocus
+                style={{
+                  letterSpacing: '14px',
+                  fontSize: '30px',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontFamily: 'monospace',
+                  padding: '14px',
+                }}
+              />
+            </div>
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={otp.length !== 6 || isVerifying}
+              style={{ width: '100%', marginTop: '8px' }}
+            >
+              {isVerifying ? 'Verifying...' : 'Verify & Activate Account'}
+            </button>
+          </form>
+
+          <p style={{ color: '#888', fontSize: '13px', marginTop: '20px' }}>
+            Code expires in 10 minutes. Check your spam folder if not received.
           </p>
           <a href="/auth" style={{ color: '#3498db', textDecoration: 'none', fontSize: '14px' }}>
             Back to Login

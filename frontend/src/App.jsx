@@ -15,7 +15,6 @@ import MeetingsPage from './pages/MeetingsPage';
 import UpdatesPage from './pages/UpdatesPage';
 import IssuesPage from './pages/IssuesPage';
 import PrivateRoute from './components/PrivateRoute';
-import VerifyEmailPage from './pages/VerifyEmailPage';
 import './App.css';
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
     return (
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
@@ -52,7 +50,6 @@ function App() {
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/updates" element={<UpdatesPage />} />
           <Route path="/issues" element={<IssuesPage />} />
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/auth" element={<Navigate to="/residents" replace />} />
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
