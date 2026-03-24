@@ -18,14 +18,19 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${app.frontend-url:https://sritulasinivas.vercel.app}")
+    private String frontendUrl;
+
     public void sendOtpEmail(String toEmail, String firstName, String otp) {
         try {
+            String encodedEmail = java.net.URLEncoder.encode(toEmail, java.nio.charset.StandardCharsets.UTF_8);
+            String verifyLink = frontendUrl + "/verify-otp?email=" + encodedEmail;
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(fromEmail);
             helper.setTo(toEmail);
             helper.setSubject("Your Sri Tulasi Nivas verification code: " + otp);
-            helper.setText(buildOtpEmailHtml(firstName, otp), true);
+            helper.setText(buildOtpEmailHtml(firstName, otp, verifyLink), true);
             mailSender.send(message);
             log.info("OTP email sent to {}", toEmail);
         } catch (Exception e) {
@@ -34,7 +39,7 @@ public class EmailService {
         }
     }
 
-    private String buildOtpEmailHtml(String firstName, String otp) {
+    private String buildOtpEmailHtml(String firstName, String otp, String verifyLink) {
         return """
             <!DOCTYPE html>
             <html>
@@ -57,7 +62,20 @@ public class EmailService {
                               color: #2c3e50; font-family: monospace;">%s</div>
                 </div>
 
-                <p style="color: #e74c3c; font-size: 13px;">
+                <div style="margin: 24px 0;">
+                  <a href="%s"
+                     style="background: #e67e22; color: white; padding: 14px 32px; text-decoration: none;
+                            border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
+                    Enter Verification Code
+                  </a>
+                </div>
+
+                <p style="color: #aaa; font-size: 12px;">
+                  Or copy and paste this link into your browser:<br>
+                  <a href="%s" style="color: #3498db; word-break: break-all;">%s</a>
+                </p>
+
+                <p style="color: #e74c3c; font-size: 13px; margin-top: 16px;">
                   Do NOT share this code with anyone.
                 </p>
                 <p style="color: #aaa; font-size: 12px;">
@@ -71,6 +89,6 @@ public class EmailService {
               </div>
             </body>
             </html>
-            """.formatted(firstName, otp);
+            """.formatted(firstName, otp, verifyLink, verifyLink, verifyLink);
     }
 }

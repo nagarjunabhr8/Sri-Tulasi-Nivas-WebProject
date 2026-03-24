@@ -15,6 +15,7 @@ import MeetingsPage from './pages/MeetingsPage';
 import UpdatesPage from './pages/UpdatesPage';
 import IssuesPage from './pages/IssuesPage';
 import PrivateRoute from './components/PrivateRoute';
+import VerifyOtpPage from './pages/VerifyOtpPage';
 import './App.css';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
     return (
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
