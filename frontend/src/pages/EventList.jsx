@@ -620,7 +620,7 @@ const EventList = () => {
       {activeTab === 'festivals' && (
         <div>
           <div style={styles.festivalsIntro}>
-            🕉️ &nbsp;Upcoming AP & Telangana festivals in 2026 — dates calculated from the confirmed Ugadi anchor (Thu 19 Mar 2026). Click <strong>Create Community Event</strong> on any festival to organise a celebration!
+            🕉️ &nbsp;Upcoming AP & Telangana festivals in 2026 — click <strong>Create Community Event</strong> on any festival to organise a celebration for our apartment community!
           </div>
           <div style={styles.festivalsGrid}>
             {UPCOMING_FESTIVALS.map(renderFestivalCard)}
