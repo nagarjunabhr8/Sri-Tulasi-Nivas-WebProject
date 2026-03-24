@@ -37,6 +37,27 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody java.util.Map<String, String> request) {
+        try {
+            java.util.Map<String, String> result = authService.forgotPassword(request.get("email"));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return new ResponseEntity<>(java.util.Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody java.util.Map<String, String> request) {
+        try {
+            java.util.Map<String, String> result = authService.resetPassword(
+                request.get("email"), request.get("otp"), request.get("newPassword"));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return new ResponseEntity<>(java.util.Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {

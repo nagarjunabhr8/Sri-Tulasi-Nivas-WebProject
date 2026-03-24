@@ -39,6 +39,59 @@ public class EmailService {
         }
     }
 
+    public void sendPasswordResetEmail(String toEmail, String firstName, String otp) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Sri Tulasi Nivas – Password Reset Code: " + otp);
+            helper.setText(buildPasswordResetHtml(firstName, otp), true);
+            mailSender.send(message);
+            log.info("Password reset email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send password reset email to {}: {}", toEmail, e.getMessage());
+            throw new RuntimeException("Failed to send password reset email. Please try again later.");
+        }
+    }
+
+    private String buildPasswordResetHtml(String firstName, String otp) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px;">
+              <div style="max-width: 500px; margin: 0 auto; background: white; border-radius: 8px;
+                          padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+                <h2 style="color: #2c3e50; margin-bottom: 4px;">Sri Tulasi Nivas</h2>
+                <p style="color: #888; margin-top: 0; margin-bottom: 30px;">Community Management Portal</p>
+
+                <h3 style="color: #34495e; text-align: left;">Hello, %s!</h3>
+                <p style="color: #555; text-align: left; line-height: 1.6;">
+                  We received a request to reset your password.<br>
+                  Use the code below — it is valid for <strong>10 minutes</strong>.
+                </p>
+
+                <div style="background: #fff8f0; border: 2px dashed #e67e22; border-radius: 12px;
+                            padding: 28px 20px; margin: 28px 0;">
+                  <p style="color: #888; font-size: 13px; margin: 0 0 10px 0;">Password Reset Code</p>
+                  <div style="font-size: 42px; font-weight: 900; letter-spacing: 14px;
+                              color: #e67e22; font-family: monospace;">%s</div>
+                </div>
+
+                <p style="color: #e74c3c; font-size: 13px;">
+                  If you did not request this, please ignore this email. Your password will not change.
+                </p>
+
+                <hr style="border: none; border-top: 1px solid #eee; margin-top: 30px;">
+                <p style="color: #bbb; font-size: 11px; margin: 0;">
+                  Sri Tulasi Nivas Community &bull; Hyderabad, Telangana
+                </p>
+              </div>
+            </body>
+            </html>
+            """.formatted(firstName, otp);
+    }
+
     private String buildOtpEmailHtml(String firstName, String otp, String verifyLink) {
         return """
             <!DOCTYPE html>

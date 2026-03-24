@@ -61,7 +61,8 @@ public class SecurityConfiguration {
             )
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/auth/verify-otp").permitAll()
+                .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/auth/verify-otp",
+                    "/auth/forgot-password", "/auth/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/auth/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/apartments/public/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/events/interested").permitAll()

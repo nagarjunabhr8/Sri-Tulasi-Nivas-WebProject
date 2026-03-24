@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import api from '../utils/api';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -39,6 +40,18 @@ const AuthPage = () => {
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
+  // Forgot password state
+  const [forgotStep, setForgotStep] = useState(null); // null | 'email' | 'otp'
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [confirmNewPwd, setConfirmNewPwd] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [showConfirmNewPwd, setShowConfirmNewPwd] = useState(false);
+
   const switchTab = (t) => {
     clearError();
     setSignInErrors({});
@@ -47,6 +60,13 @@ const AuthPage = () => {
     setShowPwd(false);
     setShowConfirmPwd(false);
     setShowSignInPwd(false);
+    setForgotStep(null);
+    setForgotEmail('');
+    setForgotOtp('');
+    setNewPwd('');
+    setConfirmNewPwd('');
+    setForgotError('');
+    setForgotSuccess(false);
     setTab(t);
   };
 
@@ -120,6 +140,46 @@ const AuthPage = () => {
     }
   };
 
+  /* ───────── Forgot password handlers ───────── */
+  const handleForgotEmailSubmit = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail.trim() || !/\S+@\S+\.\S+/.test(forgotEmail)) {
+      setForgotError('Please enter a valid email address.');
+      return;
+    }
+    setForgotLoading(true);
+    setForgotError('');
+    try {
+      await api.post('/auth/forgot-password', { email: forgotEmail });
+      setForgotStep('otp');
+    } catch (err) {
+      setForgotError(err.response?.data?.message || 'Failed to send reset code. Please try again.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (forgotOtp.length !== 6) { setForgotError('Enter the 6-digit code from your email.'); return; }
+    if (!newPwd || newPwd.length < 6) { setForgotError('Password must be at least 6 characters.'); return; }
+    if (newPwd !== confirmNewPwd) { setForgotError('Passwords do not match.'); return; }
+    setForgotLoading(true);
+    setForgotError('');
+    try {
+      await api.post('/auth/reset-password', { email: forgotEmail, otp: forgotOtp, newPassword: newPwd });
+      setForgotSuccess(true);
+      setTimeout(() => {
+        setForgotStep(null); setForgotSuccess(false);
+        setForgotEmail(''); setForgotOtp(''); setNewPwd(''); setConfirmNewPwd('');
+      }, 3000);
+    } catch (err) {
+      setForgotError(err.response?.data?.message || 'Reset failed. Please try again.');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   /* ───────── Feature list (right panel) ───────── */
   const features = [
     { icon: '🎉', text: 'Events & Festivals' },
@@ -169,8 +229,113 @@ const AuthPage = () => {
           </div>
         )}
 
+        {/* ── Forgot Password: Step 1 – Enter email ── */}
+        {tab === 'signin' && forgotStep === 'email' && (
+          <form className="auth-form" onSubmit={handleForgotEmailSubmit} noValidate>
+            <div style={{ marginBottom: '8px' }}>
+              <h3 style={{ margin: '0 0 4px 0', color: '#2c3e50' }}>Reset Password</h3>
+              <p style={{ margin: 0, color: '#888', fontSize: '0.9rem' }}>
+                Enter your registered email and we'll send a 6-digit reset code.
+              </p>
+            </div>
+            {forgotError && <div className="auth-error-banner">{forgotError}</div>}
+            <div className="auth-field">
+              <label>EMAIL ADDRESS</label>
+              <input
+                type="email"
+                placeholder="yourname@gmail.com"
+                value={forgotEmail}
+                autoFocus
+                onChange={e => setForgotEmail(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="auth-submit-btn" disabled={forgotLoading}>
+              {forgotLoading ? 'Sending…' : 'Send Reset Code'}
+            </button>
+            <p className="auth-link-text">
+              <button type="button" className="auth-text-link" onClick={() => setForgotStep(null)}>
+                ← Back to Sign In
+              </button>
+            </p>
+          </form>
+        )}
+
+        {/* ── Forgot Password: Step 2 – OTP + New Password ── */}
+        {tab === 'signin' && forgotStep === 'otp' && (
+          <form className="auth-form" onSubmit={handleResetPasswordSubmit} noValidate>
+            {forgotSuccess ? (
+              <div className="auth-success-banner">
+                ✅ Password reset successfully! Redirecting to sign in…
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: '8px' }}>
+                  <h3 style={{ margin: '0 0 4px 0', color: '#2c3e50' }}>Enter Reset Code</h3>
+                  <p style={{ margin: 0, color: '#888', fontSize: '0.9rem' }}>
+                    We sent a 6-digit code to <strong>{forgotEmail}</strong>
+                  </p>
+                </div>
+                {forgotError && <div className="auth-error-banner">{forgotError}</div>}
+                <div className="auth-field">
+                  <label>6-DIGIT RESET CODE</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={forgotOtp}
+                    autoFocus
+                    onChange={e => setForgotOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    style={{ letterSpacing: '10px', fontSize: '22px', textAlign: 'center', fontFamily: 'monospace', fontWeight: 'bold' }}
+                  />
+                </div>
+                <div className="auth-field">
+                  <label>NEW PASSWORD</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showNewPwd ? 'text' : 'password'}
+                      placeholder="Min. 6 characters"
+                      value={newPwd}
+                      onChange={e => setNewPwd(e.target.value)}
+                    />
+                    <button type="button" className="password-toggle-btn" onClick={() => setShowNewPwd(v => !v)}>
+                      {showNewPwd
+                        ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
+                    </button>
+                  </div>
+                </div>
+                <div className="auth-field">
+                  <label>CONFIRM NEW PASSWORD</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showConfirmNewPwd ? 'text' : 'password'}
+                      placeholder="Re-enter new password"
+                      value={confirmNewPwd}
+                      onChange={e => setConfirmNewPwd(e.target.value)}
+                    />
+                    <button type="button" className="password-toggle-btn" onClick={() => setShowConfirmNewPwd(v => !v)}>
+                      {showConfirmNewPwd
+                        ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" className="auth-submit-btn" disabled={forgotLoading || forgotOtp.length !== 6}>
+                  {forgotLoading ? 'Resetting…' : 'Reset Password'}
+                </button>
+                <p className="auth-link-text">
+                  <button type="button" className="auth-text-link" onClick={() => setForgotStep('email')}>
+                    ← Resend code
+                  </button>
+                </p>
+              </>
+            )}
+          </form>
+        )}
+
         {/* ── Sign In Form ── */}
-        {tab === 'signin' && (
+        {tab === 'signin' && !forgotStep && (
           <form className="auth-form" onSubmit={handleSignIn} noValidate>
             <div className="auth-field">
               <label>EMAIL ADDRESS</label>
@@ -208,7 +373,7 @@ const AuthPage = () => {
             </button>
 
             <p className="auth-link-text">
-              <button type="button" className="auth-text-link">Forgot password?</button>
+              <button type="button" className="auth-text-link" onClick={() => { clearError(); setForgotStep('email'); setForgotEmail(signIn.email); }}>Forgot password?</button>
             </p>
 
             <div className="auth-divider"><span>or</span></div>

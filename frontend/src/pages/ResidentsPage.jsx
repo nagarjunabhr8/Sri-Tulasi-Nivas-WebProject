@@ -57,6 +57,23 @@ const ResidentsPage = () => {
     }
   };
 
+  const maskEmail = (email) => {
+    if (!email) return '—';
+    const atIdx = email.indexOf('@');
+    if (atIdx < 0) return email.slice(0, 2) + 'X'.repeat(Math.max(4, email.length - 2));
+    const local = email.slice(0, atIdx);
+    const domain = email.slice(atIdx);
+    const visible = local.slice(0, 2);
+    const masked = 'X'.repeat(Math.max(4, local.length - 2));
+    return `${visible}${masked}${domain}`;
+  };
+
+  const maskPhone = (phone) => {
+    if (!phone) return '—';
+    const str = phone.toString().replace(/\s/g, '');
+    return str.slice(0, 2) + 'X'.repeat(Math.max(4, str.length - 2));
+  };
+
   const deleteResident = async (id, name) => {
     if (!window.confirm(`Delete ${name}? This action cannot be undone.`)) return;
     try {
@@ -101,7 +118,7 @@ const ResidentsPage = () => {
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="empty-row">No residents found</td></tr>
+                <tr><td colSpan={8} className="empty-row">No residents found</td></tr>
               ) : filtered.map(r => editingId === r.id ? (
                 <tr key={r.id} className="editing-row">
                   <td>
@@ -155,8 +172,8 @@ const ResidentsPage = () => {
                 <tr key={r.id}>
                   <td><span className="badge badge-flat">{r.flatNo || '—'}</span></td>
                   <td>{r.firstName} {r.lastName}</td>
-                  <td>{r.email}</td>
-                  <td>{r.phone || '—'}</td>
+                  <td title={r.email} style={{ color: '#555', fontSize: '0.85rem' }}>{maskEmail(r.email)}</td>
+                  <td title={r.phone}>{maskPhone(r.phone)}</td>
                   <td><span className={`badge badge-role-${(r.role || 'tenant').toLowerCase()}`}>{r.role || 'TENANT'}</span></td>
                   <td><span className={`badge ${r.isActive ? 'badge-active' : 'badge-inactive'}`}>{r.isActive ? 'Active' : 'Inactive'}</span></td>
                   <td title={r.whatsappApiKey ? `Key: ${r.whatsappApiKey}` : 'No CallMeBot key set'}>

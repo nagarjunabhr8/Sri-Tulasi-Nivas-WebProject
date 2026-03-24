@@ -8,6 +8,7 @@ import com.sritulasinivas.repository.UserRepository;
 import com.sritulasinivas.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -128,8 +129,47 @@ public class AuthService {
                 user.getLastName(),
                 user.getRole().toString()
             );
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Invalid email or password. Please try again.");
         } catch (DisabledException e) {
-            throw new RuntimeException("Please verify your email address before logging in. Check your inbox for the confirmation email.");
+            throw new RuntimeException("Your email address is not verified. Please check your inbox for the verification code.");
         }
+    }
+
+    @Transactional
+    public Map<String, String> forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("No account found with that email address."));
+
+        String otp = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
+        user.setVerificationToken(otp);
+        user.setTokenExpiresAt(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), user.getFirstName(), otp);
+        return Map.of("message", "Password reset code sent to your email. It expires in 10 minutes.");
+    }
+
+    @Transactional
+    public Map<String, String> resetPassword(String email, String otp, String newPassword) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("No account found with that email address."));
+
+        if (user.getVerificationToken() == null || !user.getVerificationToken().equals(otp)) {
+            throw new RuntimeException("Invalid code. Please check your email and try again.");
+        }
+        if (user.getTokenExpiresAt() != null && LocalDateTime.now().isAfter(user.getTokenExpiresAt())) {
+            throw new RuntimeException("This code has expired. Please request a new one.");
+        }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("Password must be at least 6 characters.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setVerificationToken(null);
+        user.setTokenExpiresAt(null);
+        userRepository.save(user);
+
+        return Map.of("message", "Password reset successfully! You can now log in.");
     }
 }
