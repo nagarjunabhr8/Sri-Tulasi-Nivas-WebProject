@@ -8,7 +8,7 @@ const NAV_ITEMS = [
     label: 'Events', path: '/events', dropdown: [
       { label: '🎉 All Events', path: '/events' },
       { label: '📅 Upcoming Events', path: '/events' },
-      { label: '🕉️ Festivals 2026', path: '/events?tab=festivals' },
+      { label: '🕉️ AP & TG Festivals', path: '/events?tab=festivals' },
     ]
   },
   {

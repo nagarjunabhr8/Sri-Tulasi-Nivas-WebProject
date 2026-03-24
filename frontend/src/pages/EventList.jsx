@@ -3,79 +3,54 @@ import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
 
-// ─── 10 Upcoming Indian Festivals 2026 ───────────────────────────────────────
+// ─── AP & Telangana Festivals 2026 ───────────────────────────────────────────
+// Dates derived from confirmed anchor: Ugadi = Thu 19 Mar 2026 (Chaitra Shukla 1)
+// Each subsequent Hindu date calculated via lunar month (~29.53 days/month).
 const UPCOMING_FESTIVALS = [
   {
-    name: 'Ugadi / Gudi Padwa',
-    date: '2026-03-30',
+    name: 'Ugadi (Telugu New Year)',
+    date: '2026-03-19',
     emoji: '🌸',
-    type: 'Hindu',
+    type: 'Telugu',
     typeColor: '#f97316',
-    description: 'Telugu and Kannada New Year marking the start of a new Hindu lunar calendar, celebrated with Pachadi and new beginnings.',
+    description: 'Telugu New Year — Chaitra Shukla Pratipada. Celebrated with Ugadi Pachadi (six tastes of life), new clothes, mango leaves on doors, and reading of Panchanga (almanac) for the coming year.',
     link: 'https://en.wikipedia.org/wiki/Ugadi',
   },
   {
-    name: 'Eid al-Fitr',
-    date: '2026-03-31',
-    emoji: '🌙',
-    type: 'Islamic',
-    typeColor: '#10b981',
-    description: 'Festival of Breaking the Fast, marking the end of Ramadan with special prayers, feasting, charity (Zakat), and family celebrations.',
-    link: 'https://en.wikipedia.org/wiki/Eid_al-Fitr',
-  },
-  {
-    name: 'Ram Navami',
-    date: '2026-04-06',
+    name: 'Sri Rama Navami',
+    date: '2026-03-27',
     emoji: '🏹',
     type: 'Hindu',
-    typeColor: '#f97316',
-    description: 'Hindu festival celebrating the birth of Lord Rama, the seventh avatar of Vishnu, with bhajans, processions, and temple visits.',
+    typeColor: '#dc2626',
+    description: 'Birthday of Lord Sri Rama — Chaitra Shukla Navami. Grand celebrations at Bhadrachalam temple in Telangana, Sita Kalyanam processions, and all-night bhajans across AP & Telangana.',
     link: 'https://en.wikipedia.org/wiki/Ram_Navami',
   },
   {
-    name: 'Ambedkar Jayanti',
-    date: '2026-04-14',
-    emoji: '📘',
-    type: 'National',
-    typeColor: '#3b82f6',
-    description: 'Birth anniversary of Dr. B.R. Ambedkar, father of the Indian Constitution and champion of social justice, observed as a national holiday.',
-    link: 'https://en.wikipedia.org/wiki/Ambedkar_Jayanti',
-  },
-  {
     name: 'Akshaya Tritiya',
-    date: '2026-04-29',
+    date: '2026-04-20',
     emoji: '✨',
     type: 'Hindu',
     typeColor: '#f97316',
-    description: 'Auspicious Hindu day considered ideal for new beginnings, gold purchases, weddings, and charitable deeds — prosperity never diminishes.',
+    description: 'Vaisakha Shukla Tritiya — an auspicious day for new ventures, gold purchases, weddings, and charity. Prosperity earned on this day is said to never diminish.',
     link: 'https://en.wikipedia.org/wiki/Akshaya_Tritiya',
   },
   {
-    name: 'Buddha Purnima',
-    date: '2026-05-12',
-    emoji: '☸️',
-    type: 'Buddhist',
-    typeColor: '#8b5cf6',
-    description: 'The holiest Buddhist festival marking the birth, enlightenment, and parinirvana of Gautama Buddha, celebrated with prayers and lamp lighting.',
-    link: 'https://en.wikipedia.org/wiki/Vesak',
-  },
-  {
-    name: 'Eid al-Adha',
+    name: 'Eid al-Adha (Bakrid)',
     date: '2026-06-07',
     emoji: '🕌',
     type: 'Islamic',
     typeColor: '#10b981',
-    description: 'Festival of Sacrifice honouring Ibrahim\'s devotion, marked by special prayers, animal sacrifice, and sharing food with the poor.',
+    description: 'Festival of Sacrifice — Hyderabad\'s most celebrated Islamic festival. Marked with grand prayers at Mecca Masjid, Charminar gatherings, biryani feasts, and sharing with neighbours.',
     link: 'https://en.wikipedia.org/wiki/Eid_al-Adha',
   },
   {
-    name: 'Guru Purnima',
-    date: '2026-07-10',
-    emoji: '🙏',
-    type: 'Hindu',
-    typeColor: '#f97316',
-    description: 'Sacred full-moon day to honour spiritual and academic teachers, offering gratitude for their guidance and wisdom throughout life.',
-    link: 'https://en.wikipedia.org/wiki/Guru_Purnima',
+    name: 'Bonalu',
+    date: '2026-07-05',
+    emoji: '🪔',
+    type: 'Telangana',
+    typeColor: '#7c3aed',
+    description: 'Telangana\'s harvest thanksgiving to Goddess Mahakali. Bonalu (food offerings in decorated pots) carried in colourful processions to Ujjaini Mahankali, Lal Darwaza, and Golconda temples.',
+    link: 'https://en.wikipedia.org/wiki/Bonalu',
   },
   {
     name: 'Independence Day',
@@ -83,17 +58,44 @@ const UPCOMING_FESTIVALS = [
     emoji: '🇮🇳',
     type: 'National',
     typeColor: '#3b82f6',
-    description: 'India\'s 80th Independence Day — celebrating the nation\'s freedom from British rule on August 15, 1947, with flag hoisting and patriotic events.',
+    description: 'India\'s 80th Independence Day — flag hoisting, patriotic programmes, and community celebrations commemorating freedom from British rule on August 15, 1947.',
     link: 'https://en.wikipedia.org/wiki/Independence_Day_(India)',
   },
   {
-    name: 'Ganesh Chaturthi',
-    date: '2026-09-02',
+    name: 'Vinayaka Chavithi',
+    date: '2026-08-19',
     emoji: '🐘',
-    type: 'Hindu',
+    type: 'Telugu',
     typeColor: '#f97316',
-    description: '10-day festival celebrating Lord Ganesha\'s birthday with grand pandals, aarti, modak offerings, and joyful immersion processions.',
+    description: 'Bhadrapada Shukla Chaturthi — 10-day celebration of Lord Ganesha. AP & Telangana are famous for the largest Ganesh pandals, processions, and Nimarjanam (immersion) in lakes and tanks.',
     link: 'https://en.wikipedia.org/wiki/Ganesh_Chaturthi',
+  },
+  {
+    name: 'Saddula Bathukamma',
+    date: '2026-09-24',
+    emoji: '🌺',
+    type: 'Telangana',
+    typeColor: '#7c3aed',
+    description: 'The grandest day of Bathukamma — Telangana\'s floral festival to Goddess Gauri. Women stack seasonal flowers into cone-shaped arrangements and float them on water, singing folk songs (Bathukamma paatalu).',
+    link: 'https://en.wikipedia.org/wiki/Bathukamma',
+  },
+  {
+    name: 'Deepavali',
+    date: '2026-10-14',
+    emoji: '🪔',
+    type: 'Hindu',
+    typeColor: '#eab308',
+    description: 'Festival of Lights — Ashwina Amavasya. Homes lit with diyas and rangoli, fireworks, exchange of sweets, and Lakshmi Puja. A major celebration across every AP & Telangana household.',
+    link: 'https://en.wikipedia.org/wiki/Diwali',
+  },
+  {
+    name: 'Karthika Pournami',
+    date: '2026-10-29',
+    emoji: '🏮',
+    type: 'Telugu',
+    typeColor: '#f97316',
+    description: 'Full moon of Karthika masam — the holiest month in Telugu culture. Devotees light Karthika deepams (oil lamps) every evening, visit Shiva temples, take holy dips in rivers, and light sky lanterns.',
+    link: 'https://en.wikipedia.org/wiki/Kartik_Purnima',
   },
 ];
 
@@ -573,7 +575,7 @@ const EventList = () => {
           style={{ ...styles.tab, ...(activeTab === 'festivals' ? styles.tabActive : {}) }}
           onClick={() => setActiveTab('festivals')}
         >
-          🕉️ Indian Festivals 2026
+          🕉️ AP & Telangana Festivals 2026
         </button>
       </div>
 
@@ -618,7 +620,7 @@ const EventList = () => {
       {activeTab === 'festivals' && (
         <div>
           <div style={styles.festivalsIntro}>
-            🕉️ &nbsp;Upcoming Indian festivals in 2026 — click <strong>Create Community Event</strong> on any festival to organise a celebration for our apartment community!
+            🕉️ &nbsp;Upcoming AP & Telangana festivals in 2026 — dates calculated from the confirmed Ugadi anchor (Thu 19 Mar 2026). Click <strong>Create Community Event</strong> on any festival to organise a celebration!
           </div>
           <div style={styles.festivalsGrid}>
             {UPCOMING_FESTIVALS.map(renderFestivalCard)}
