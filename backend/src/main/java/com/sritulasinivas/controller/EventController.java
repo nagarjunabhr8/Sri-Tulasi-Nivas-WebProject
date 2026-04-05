@@ -43,9 +43,13 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO dto, Principal principal) {
-        EventDTO created = eventService.createEvent(dto, principal.getName());
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<?> createEvent(@RequestBody EventDTO dto, Principal principal) {
+        try {
+            EventDTO created = eventService.createEvent(dto, principal.getName());
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
