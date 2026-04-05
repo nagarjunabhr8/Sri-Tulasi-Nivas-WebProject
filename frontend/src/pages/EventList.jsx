@@ -1,7 +1,134 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
+
+// ─── Extracted Create-Event Modal ────────────────────────────────────────────
+// Manages its own form state so keystrokes never re-render the parent EventList.
+const CreateEventModal = memo(({ prefillFestival, user, onClose, onCreated }) => {
+  const [form, setForm] = useState({
+    title:       prefillFestival ? `${prefillFestival.emoji} ${prefillFestival.name} Celebration` : '',
+    description: prefillFestival ? prefillFestival.description : '',
+    eventDate:   prefillFestival ? prefillFestival.date + 'T10:00' : '',
+    location:    'Sri Tulasi Nivas Apartment Complex',
+    festivalLink: prefillFestival ? prefillFestival.link : '',
+    initiatedBy:  user ? `${user.firstName} ${user.lastName}` : '',
+  });
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
+  const [success, setSuccess]   = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.title.trim() || !form.eventDate || !form.location.trim()) {
+      setError('Title, Date & Time, and Location are required.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      await api.post('/events', {
+        title:          form.title,
+        description:    form.description,
+        eventDate:      form.eventDate,
+        location:       form.location,
+        estimatedBudget: 0,
+        festivalLink:   form.festivalLink,
+        initiatedBy:    form.initiatedBy,
+      });
+      setSuccess('Event created successfully! 🎉');
+      setTimeout(() => onCreated(), 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create event.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={styles.modalOverlay} onClick={onClose}>
+      <div style={styles.modalBox} onClick={e => e.stopPropagation()}>
+        <div style={styles.modalHeader}>
+          <h2 style={styles.modalTitle}>
+            {prefillFestival ? `${prefillFestival.emoji} Create Festival Event` : '➕ Create Community Event'}
+          </h2>
+          <button onClick={onClose} style={styles.closeBtn}>✕</button>
+        </div>
+
+        {success ? (
+          <div style={styles.successBanner}>{success}</div>
+        ) : (
+          <form onSubmit={handleSubmit} style={styles.modalForm}>
+            {error && <div style={styles.errorBanner}>{error}</div>}
+
+            <label style={styles.formLabel}>Event Title *</label>
+            <input
+              style={styles.formInput}
+              value={form.title}
+              onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+              placeholder="e.g. 🌸 Ugadi Celebration 2026"
+              autoFocus
+              required
+            />
+
+            <label style={styles.formLabel}>Date & Time *</label>
+            <input
+              type="datetime-local"
+              style={styles.formInput}
+              value={form.eventDate}
+              onChange={e => setForm(p => ({ ...p, eventDate: e.target.value }))}
+              min={new Date().toISOString().slice(0, 16)}
+              required
+            />
+
+            <label style={styles.formLabel}>Location *</label>
+            <input
+              style={styles.formInput}
+              value={form.location}
+              onChange={e => setForm(p => ({ ...p, location: e.target.value }))}
+              placeholder="e.g. Community Hall, Rooftop Terrace"
+              required
+            />
+
+            <label style={styles.formLabel}>Description</label>
+            <textarea
+              style={{ ...styles.formInput, height: 80, resize: 'vertical' }}
+              value={form.description}
+              onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+              placeholder="Describe the event, activities planned, what to bring…"
+            />
+
+            <label style={styles.formLabel}>Organiser / Who is initiating</label>
+            <input
+              style={styles.formInput}
+              value={form.initiatedBy}
+              onChange={e => setForm(p => ({ ...p, initiatedBy: e.target.value }))}
+              placeholder="Your name or committee name"
+            />
+
+            <label style={styles.formLabel}>Festival Reference Link (optional)</label>
+            <input
+              type="url"
+              style={styles.formInput}
+              value={form.festivalLink}
+              onChange={e => setForm(p => ({ ...p, festivalLink: e.target.value }))}
+              placeholder="https://en.wikipedia.org/wiki/..."
+            />
+
+            <div style={styles.modalFooter}>
+              <button type="button" onClick={onClose} style={styles.cancelBtn}>
+                Cancel
+              </button>
+              <button type="submit" disabled={loading} style={styles.submitBtn}>
+                {loading ? 'Creating…' : '🎉 Create Event'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+});
 
 // ─── AP & Telangana Festivals 2026 ───────────────────────────────────────────
 // Dates derived from confirmed anchor: Ugadi = Thu 19 Mar 2026 (Chaitra Shukla 1)
@@ -142,13 +269,6 @@ const EventList = () => {
   // Create event modal
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [prefillFestival, setPrefillFestival]  = useState(null);
-  const [createForm, setCreateForm] = useState({
-    title: '', description: '', eventDate: '', location: 'Sri Tulasi Nivas Apartment Complex',
-    festivalLink: '', initiatedBy: '',
-  });
-  const [createLoading, setCreateLoading] = useState(false);
-  const [createError, setCreateError]     = useState('');
-  const [createSuccess, setCreateSuccess] = useState('');
 
   // WhatsApp modal
   const [showWAModal, setShowWAModal]           = useState(false);
@@ -195,49 +315,14 @@ const EventList = () => {
 
   const openCreateModal = (festival = null) => {
     setPrefillFestival(festival);
-    setCreateForm({
-      title:       festival ? `${festival.emoji} ${festival.name} Celebration` : '',
-      description: festival ? festival.description : '',
-      eventDate:   festival ? festival.date + 'T10:00' : '',
-      location:    'Sri Tulasi Nivas Apartment Complex',
-      festivalLink: festival ? festival.link : '',
-      initiatedBy:  user ? `${user.firstName} ${user.lastName}` : '',
-    });
-    setCreateError('');
-    setCreateSuccess('');
     setShowCreateModal(true);
   };
 
-  const handleCreateEvent = async (e) => {
-    e.preventDefault();
-    if (!createForm.title.trim() || !createForm.eventDate || !createForm.location.trim()) {
-      setCreateError('Title, Date & Time, and Location are required.');
-      return;
-    }
-    setCreateLoading(true);
-    setCreateError('');
-    try {
-      await api.post('/events', {
-        title:          createForm.title,
-        description:    createForm.description,
-        eventDate:      createForm.eventDate,
-        location:       createForm.location,
-        estimatedBudget: 0,
-        festivalLink:   createForm.festivalLink,
-        initiatedBy:    createForm.initiatedBy,
-      });
-      setCreateSuccess('Event created successfully! 🎉');
-      setTimeout(() => {
-        setShowCreateModal(false);
-        setActiveTab('events');
-        setPage(0);
-        fetchEvents();
-      }, 1500);
-    } catch (err) {
-      setCreateError(err.response?.data?.message || 'Failed to create event.');
-    } finally {
-      setCreateLoading(false);
-    }
+  const handleModalCreated = () => {
+    setShowCreateModal(false);
+    setActiveTab('events');
+    setPage(0);
+    fetchEvents();
   };
 
   const openWAModal = async (event) => {
@@ -393,91 +478,6 @@ const EventList = () => {
     );
   };
 
-  // ─── Modals (inline JSX – NOT nested components, to avoid remount on keystroke) ──
-
-  const createEventModalJSX = (
-    <div style={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
-      <div style={styles.modalBox} onClick={e => e.stopPropagation()}>
-        <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>
-            {prefillFestival ? `${prefillFestival.emoji} Create Festival Event` : '➕ Create Community Event'}
-          </h2>
-          <button onClick={() => setShowCreateModal(false)} style={styles.closeBtn}>✕</button>
-        </div>
-
-        {createSuccess ? (
-          <div style={styles.successBanner}>{createSuccess}</div>
-        ) : (
-          <form onSubmit={handleCreateEvent} style={styles.modalForm}>
-            {createError && <div style={styles.errorBanner}>{createError}</div>}
-
-            <label style={styles.formLabel}>Event Title *</label>
-            <input
-              style={styles.formInput}
-              value={createForm.title}
-              onChange={e => setCreateForm(p => ({ ...p, title: e.target.value }))}
-              placeholder="e.g. 🌸 Ugadi Celebration 2026"
-              required
-            />
-
-            <label style={styles.formLabel}>Date & Time *</label>
-            <input
-              type="datetime-local"
-              style={styles.formInput}
-              value={createForm.eventDate}
-              onChange={e => setCreateForm(p => ({ ...p, eventDate: e.target.value }))}
-              min={new Date().toISOString().slice(0, 16)}
-              required
-            />
-
-            <label style={styles.formLabel}>Location *</label>
-            <input
-              style={styles.formInput}
-              value={createForm.location}
-              onChange={e => setCreateForm(p => ({ ...p, location: e.target.value }))}
-              placeholder="e.g. Community Hall, Rooftop Terrace"
-              required
-            />
-
-            <label style={styles.formLabel}>Description</label>
-            <textarea
-              style={{ ...styles.formInput, height: 80, resize: 'vertical' }}
-              value={createForm.description}
-              onChange={e => setCreateForm(p => ({ ...p, description: e.target.value }))}
-              placeholder="Describe the event, activities planned, what to bring…"
-            />
-
-            <label style={styles.formLabel}>Organiser / Who is initiating</label>
-            <input
-              style={styles.formInput}
-              value={createForm.initiatedBy}
-              onChange={e => setCreateForm(p => ({ ...p, initiatedBy: e.target.value }))}
-              placeholder="Your name or committee name"
-            />
-
-            <label style={styles.formLabel}>Festival Reference Link (optional)</label>
-            <input
-              type="url"
-              style={styles.formInput}
-              value={createForm.festivalLink}
-              onChange={e => setCreateForm(p => ({ ...p, festivalLink: e.target.value }))}
-              placeholder="https://en.wikipedia.org/wiki/..."
-            />
-
-            <div style={styles.modalFooter}>
-              <button type="button" onClick={() => setShowCreateModal(false)} style={styles.cancelBtn}>
-                Cancel
-              </button>
-              <button type="submit" disabled={createLoading} style={styles.submitBtn}>
-                {createLoading ? 'Creating…' : '🎉 Create Event'}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
-  );
-
   const waMessage = buildWAMessage(waEvent);
   const whatsAppModalJSX = (
     <div style={styles.modalOverlay} onClick={() => setShowWAModal(false)}>
@@ -627,8 +627,15 @@ const EventList = () => {
       )}
 
       {/* Modals */}
-      {showCreateModal && createEventModalJSX}
-      {showWAModal     && whatsAppModalJSX}
+      {showCreateModal && (
+        <CreateEventModal
+          prefillFestival={prefillFestival}
+          user={user}
+          onClose={() => setShowCreateModal(false)}
+          onCreated={handleModalCreated}
+        />
+      )}
+      {showWAModal && whatsAppModalJSX}
     </div>
   );
 };
