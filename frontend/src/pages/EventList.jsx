@@ -393,9 +393,9 @@ const EventList = () => {
     );
   };
 
-  // ─── Modals ─────────────────────────────────────────────────────────────────
+  // ─── Modals (inline JSX – NOT nested components, to avoid remount on keystroke) ──
 
-  const CreateEventModal = () => (
+  const createEventModalJSX = (
     <div style={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
       <div style={styles.modalBox} onClick={e => e.stopPropagation()}>
         <div style={styles.modalHeader}>
@@ -478,76 +478,74 @@ const EventList = () => {
     </div>
   );
 
-  const WhatsAppModal = () => {
-    const message = buildWAMessage(waEvent);
-    return (
-      <div style={styles.modalOverlay} onClick={() => setShowWAModal(false)}>
-        <div style={{ ...styles.modalBox, maxWidth: 600 }} onClick={e => e.stopPropagation()}>
+  const waMessage = buildWAMessage(waEvent);
+  const whatsAppModalJSX = (
+    <div style={styles.modalOverlay} onClick={() => setShowWAModal(false)}>
+      <div style={{ ...styles.modalBox, maxWidth: 600 }} onClick={e => e.stopPropagation()}>
           <div style={styles.modalHeader}>
             <h2 style={styles.modalTitle}>📱 Share on WhatsApp</h2>
             <button onClick={() => setShowWAModal(false)} style={styles.closeBtn}>✕</button>
           </div>
 
-          {waEvent && (
-            <div style={styles.waEventPreview}>
-              <strong>{waEvent.title}</strong><br />
-              📅 {formatDate(waEvent.eventDate)} &nbsp;·&nbsp; 📍 {waEvent.location}
+        {waEvent && (
+          <div style={styles.waEventPreview}>
+            <strong>{waEvent.title}</strong><br />
+            📅 {formatDate(waEvent.eventDate)} &nbsp;·&nbsp; 📍 {waEvent.location}
+          </div>
+        )}
+
+        {/* Message preview */}
+        <div style={styles.waMsgBox}>
+          <div style={styles.waMsgLabel}>Pre-composed message:</div>
+          <pre style={styles.waMsgText}>{waMessage}</pre>
+          <button
+            onClick={() => copyToClipboard(waMessage)}
+            style={styles.copyBtn}
+          >
+            {copyMsg ? '✅ Copied!' : '📋 Copy Message'}
+          </button>
+        </div>
+
+        {/* Phone list */}
+        <div style={styles.waPhoneSection}>
+          <div style={styles.waPhoneTitle}>
+            Community Members {phones.length > 0 && `(${phones.length} with phone numbers)`}
+          </div>
+          {phonesLoading ? (
+            <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>Loading members…</div>
+          ) : phones.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>No phone numbers found.</div>
+          ) : (
+            <div style={styles.phoneList}>
+              {phones.map((p, i) => (
+                <div key={i} style={styles.phoneRow}>
+                  <div style={styles.phoneContact}>
+                    <span style={styles.phoneAvatar}>{p.name.charAt(0).toUpperCase()}</span>
+                    <div>
+                      <div style={styles.phoneName}>{p.name}</div>
+                      {p.flatNo && <div style={styles.phoneFlatNo}>Flat {p.flatNo}</div>}
+                    </div>
+                  </div>
+                  <a
+                    href={`https://wa.me/${formatWhatsAppNumber(p.phone)}?text=${encodeURIComponent(waMessage)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.sendWaBtn}
+                  >
+                    📲 Send
+                  </a>
+                </div>
+              ))}
             </div>
           )}
+        </div>
 
-          {/* Message preview */}
-          <div style={styles.waMsgBox}>
-            <div style={styles.waMsgLabel}>Pre-composed message:</div>
-            <pre style={styles.waMsgText}>{message}</pre>
-            <button
-              onClick={() => copyToClipboard(message)}
-              style={styles.copyBtn}
-            >
-              {copyMsg ? '✅ Copied!' : '📋 Copy Message'}
-            </button>
-          </div>
-
-          {/* Phone list */}
-          <div style={styles.waPhoneSection}>
-            <div style={styles.waPhoneTitle}>
-              Community Members {phones.length > 0 && `(${phones.length} with phone numbers)`}
-            </div>
-            {phonesLoading ? (
-              <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>Loading members…</div>
-            ) : phones.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 20, color: '#666' }}>No phone numbers found.</div>
-            ) : (
-              <div style={styles.phoneList}>
-                {phones.map((p, i) => (
-                  <div key={i} style={styles.phoneRow}>
-                    <div style={styles.phoneContact}>
-                      <span style={styles.phoneAvatar}>{p.name.charAt(0).toUpperCase()}</span>
-                      <div>
-                        <div style={styles.phoneName}>{p.name}</div>
-                        {p.flatNo && <div style={styles.phoneFlatNo}>Flat {p.flatNo}</div>}
-                      </div>
-                    </div>
-                    <a
-                      href={`https://wa.me/${formatWhatsAppNumber(p.phone)}?text=${encodeURIComponent(message)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={styles.sendWaBtn}
-                    >
-                      📲 Send
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={styles.waNote}>
-            💡 <em>Tip: Copy the message above and paste it in your WhatsApp group to notify everyone at once.</em>
-          </div>
+        <div style={styles.waNote}>
+          💡 <em>Tip: Copy the message above and paste it in your WhatsApp group to notify everyone at once.</em>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
@@ -629,8 +627,8 @@ const EventList = () => {
       )}
 
       {/* Modals */}
-      {showCreateModal && <CreateEventModal />}
-      {showWAModal     && <WhatsAppModal />}
+      {showCreateModal && createEventModalJSX}
+      {showWAModal     && whatsAppModalJSX}
     </div>
   );
 };
