@@ -4,6 +4,12 @@ import { useAuthStore } from '../store/authStore';
 
 const empty = { flatNo: '', category: '', description: '', priority: 'Medium' };
 
+const NEXT_STATUS = {
+  'Open': 'In Progress',
+  'In Progress': 'Resolved',
+  'Resolved': 'Closed',
+};
+
 const IssuesPage = () => {
   const { user } = useAuthStore();
   const [issues, setIssues] = useState([]);
@@ -12,6 +18,14 @@ const IssuesPage = () => {
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
   const [filterStatus, setFilterStatus] = useState('All');
+
+  // Status update modal state
+  const [statusModal, setStatusModal] = useState(null); // { issue, targetStatus }
+  const [statusForm, setStatusForm] = useState({ assignedTo: '', resolutionNotes: '' });
+  const [updating, setUpdating] = useState(false);
+
+  // Issue detail expand
+  const [expandedId, setExpandedId] = useState(null);
 
   const load = () => {
     api.get('/issues').then(r => setIssues(r.data)).catch(() => {}).finally(() => setLoading(false));
@@ -29,6 +43,34 @@ const IssuesPage = () => {
       setShowForm(false);
       load();
     } catch { } finally { setSaving(false); }
+  };
+
+  const openStatusModal = (issue, targetStatus) => {
+    setStatusModal({ issue, targetStatus });
+    setStatusForm({ assignedTo: issue.assignedTo || '', resolutionNotes: '' });
+  };
+
+  const handleStatusUpdate = async e => {
+    e.preventDefault();
+    if (!statusModal) return;
+    setUpdating(true);
+    try {
+      await api.patch(`/issues/${statusModal.issue.id}/status`, {
+        status: statusModal.targetStatus,
+        assignedTo: statusForm.assignedTo,
+        resolutionNotes: statusForm.resolutionNotes,
+      });
+      setStatusModal(null);
+      load();
+    } catch { } finally { setUpdating(false); }
+  };
+
+  const handleReopen = async (issue) => {
+    setUpdating(true);
+    try {
+      await api.patch(`/issues/${issue.id}/status`, { status: 'Open' });
+      load();
+    } catch { } finally { setUpdating(false); }
   };
 
   const filtered = filterStatus === 'All' ? issues : issues.filter(i => i.status === filterStatus);
@@ -84,24 +126,122 @@ const IssuesPage = () => {
         <div className="data-table-wrapper">
           <table className="data-table">
             <thead>
-              <tr><th>Flat</th><th>Category</th><th>Description</th><th>Reported By</th><th>Priority</th><th>Status</th><th>Date</th></tr>
+              <tr><th>Flat</th><th>Category</th><th>Description</th><th>Reported By</th><th>Assigned To</th><th>Priority</th><th>Status</th><th>Date</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="empty-row">No issues found</td></tr>
+                <tr><td colSpan={9} className="empty-row">No issues found</td></tr>
               ) : filtered.map(i => (
-                <tr key={i.id}>
-                  <td><span className="badge-flat">{i.flatNo}</span></td>
-                  <td>{i.category}</td>
-                  <td className="desc-cell">{i.description}</td>
-                  <td>{i.reportedBy || '—'}</td>
-                  <td><span className={`badge ${priorityColor(i.priority)}`}>{i.priority}</span></td>
-                  <td><span className={`badge ${statusColor(i.status)}`}>{i.status}</span></td>
-                  <td>{i.createdAt ? new Date(i.createdAt).toLocaleDateString('en-IN') : '—'}</td>
-                </tr>
+                <React.Fragment key={i.id}>
+                  <tr style={{ cursor: 'pointer' }} onClick={() => setExpandedId(expandedId === i.id ? null : i.id)}>
+                    <td><span className="badge-flat">{i.flatNo}</span></td>
+                    <td>{i.category}</td>
+                    <td className="desc-cell">{i.description}</td>
+                    <td>{i.reportedBy || '—'}</td>
+                    <td>{i.assignedTo || <span style={{ color: '#999' }}>Unassigned</span>}</td>
+                    <td><span className={`badge ${priorityColor(i.priority)}`}>{i.priority}</span></td>
+                    <td><span className={`badge ${statusColor(i.status)}`}>{i.status}</span></td>
+                    <td>{i.createdAt ? new Date(i.createdAt).toLocaleDateString('en-IN') : '—'}</td>
+                    <td onClick={e => e.stopPropagation()}>
+                      {NEXT_STATUS[i.status] && (
+                        <button
+                          className="btn-status-action"
+                          onClick={() => openStatusModal(i, NEXT_STATUS[i.status])}
+                          title={`Move to ${NEXT_STATUS[i.status]}`}
+                        >
+                          → {NEXT_STATUS[i.status]}
+                        </button>
+                      )}
+                      {(i.status === 'In Progress' || i.status === 'Resolved') && (
+                        <button
+                          className="btn-status-reopen"
+                          onClick={() => i.status === 'Resolved' ? openStatusModal(i, 'In Progress') : handleReopen(i)}
+                          title={i.status === 'Resolved' ? 'Reopen to In Progress' : 'Reopen'}
+                        >
+                          ↩ {i.status === 'Resolved' ? 'Reopen' : 'Reopen'}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                  {expandedId === i.id && (
+                    <tr className="issue-detail-row">
+                      <td colSpan={9}>
+                        <div className="issue-detail-panel">
+                          <div className="issue-detail-grid">
+                            <div><strong>Reported By:</strong> {i.reportedBy || '—'}</div>
+                            <div><strong>Assigned To:</strong> {i.assignedTo || 'Unassigned'}</div>
+                            <div><strong>Created:</strong> {i.createdAt ? new Date(i.createdAt).toLocaleString('en-IN') : '—'}</div>
+                            <div><strong>Last Updated:</strong> {i.updatedAt ? new Date(i.updatedAt).toLocaleString('en-IN') : '—'}</div>
+                            {i.resolvedAt && <div><strong>Resolved At:</strong> {new Date(i.resolvedAt).toLocaleString('en-IN')}</div>}
+                            {i.resolutionNotes && <div className="issue-resolution-notes"><strong>Resolution Notes:</strong> {i.resolutionNotes}</div>}
+                          </div>
+                          <div className="issue-status-timeline">
+                            {['Open', 'In Progress', 'Resolved', 'Closed'].map((s, idx) => {
+                              const statusOrder = { 'Open': 0, 'In Progress': 1, 'Resolved': 2, 'Closed': 3 };
+                              const current = statusOrder[i.status];
+                              const step = statusOrder[s];
+                              return (
+                                <div key={s} className={`timeline-step ${step < current ? 'completed' : step === current ? 'current' : 'pending'}`}>
+                                  <div className="timeline-dot">{step < current ? '✓' : step === current ? '●' : '○'}</div>
+                                  <div className="timeline-label">{s}</div>
+                                  {idx < 3 && <div className={`timeline-line ${step < current ? 'completed' : ''}`} />}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Status Update Modal */}
+      {statusModal && (
+        <div className="modal-overlay" onClick={() => setStatusModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>Update Status → {statusModal.targetStatus}</h3>
+            <p style={{ color: '#666', marginBottom: '1rem' }}>
+              Issue: <strong>{statusModal.issue.description}</strong> (Flat {statusModal.issue.flatNo})
+            </p>
+            <form onSubmit={handleStatusUpdate}>
+              {statusModal.targetStatus === 'In Progress' && (
+                <div className="auth-field">
+                  <label>ASSIGNED TO *</label>
+                  <input
+                    required
+                    value={statusForm.assignedTo}
+                    onChange={e => setStatusForm({...statusForm, assignedTo: e.target.value})}
+                    placeholder="Enter name of person handling this issue"
+                  />
+                </div>
+              )}
+              {statusModal.targetStatus === 'Resolved' && (
+                <div className="auth-field">
+                  <label>RESOLUTION NOTES</label>
+                  <textarea
+                    value={statusForm.resolutionNotes}
+                    onChange={e => setStatusForm({...statusForm, resolutionNotes: e.target.value})}
+                    rows={3}
+                    placeholder="Describe how the issue was resolved…"
+                  />
+                </div>
+              )}
+              {statusModal.targetStatus === 'Closed' && (
+                <p style={{ color: '#666' }}>This will close the issue permanently. Are you sure?</p>
+              )}
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+                <button type="submit" className="auth-submit-btn" disabled={updating}>
+                  {updating ? 'Updating…' : `Confirm → ${statusModal.targetStatus}`}
+                </button>
+                <button type="button" className="btn-cancel" onClick={() => setStatusModal(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

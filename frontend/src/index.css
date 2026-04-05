@@ -1804,3 +1804,174 @@ body {
     gap: 0.75rem;
   }
 }
+
+/* ── Issue Status Workflow ── */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: #8b4513;
+}
+
+.btn-status-action {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #8b4513, #a0522d);
+  color: #fff;
+  margin-right: 0.4rem;
+  margin-bottom: 0.25rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-status-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139,69,19,0.3);
+}
+
+.btn-status-reopen {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fff;
+  color: #666;
+  margin-bottom: 0.25rem;
+  transition: border-color 0.15s;
+}
+
+.btn-status-reopen:hover {
+  border-color: #8b4513;
+  color: #8b4513;
+}
+
+/* Issue detail expandable row */
+.issue-detail-row td {
+  padding: 0 !important;
+  border-top: none !important;
+}
+
+.issue-detail-panel {
+  background: #fdf8f0;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px dashed #e0d6c8;
+}
+
+.issue-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+  color: #555;
+}
+
+.issue-detail-grid strong {
+  color: #333;
+}
+
+.issue-resolution-notes {
+  grid-column: 1 / -1;
+  background: #f0f7f0;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #4caf50;
+}
+
+/* Status timeline */
+.issue-status-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 0.5rem;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+.timeline-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.timeline-step.completed .timeline-dot {
+  background: #4caf50;
+  color: #fff;
+}
+
+.timeline-step.current .timeline-dot {
+  background: #8b4513;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(139,69,19,0.2);
+}
+
+.timeline-step.pending .timeline-dot {
+  background: #e0d6c8;
+  color: #999;
+}
+
+.timeline-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+  color: #666;
+  text-align: center;
+}
+
+.timeline-step.current .timeline-label {
+  color: #8b4513;
+}
+
+.timeline-step.completed .timeline-label {
+  color: #4caf50;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 100%;
+  height: 3px;
+  background: #e0d6c8;
+  z-index: 0;
+}
+
+.timeline-line.completed {
+  background: #4caf50;
+}

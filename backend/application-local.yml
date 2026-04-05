@@ -1,14 +1,25 @@
-# Local development profile - uses Docker PostgreSQL with password auth
+# Local development profile - H2 in-memory DB (no PostgreSQL required)
 spring:
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:sri_tulasi_nivas}?TimeZone=UTC
-    username: ${DATABASE_USER:postgres}
-    password: ${DATABASE_PASSWORD:password}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:sri_tulasi_nivas;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;NON_KEYWORDS=MONTH,YEAR,VALUE,KEY,CHECK,LEVEL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    show-sql: true
 
 cors:
   allowed-origins: http://localhost:3000,http://localhost:3001,http://localhost:3002

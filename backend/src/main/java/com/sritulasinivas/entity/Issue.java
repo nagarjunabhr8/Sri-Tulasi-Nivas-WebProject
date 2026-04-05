@@ -36,6 +36,10 @@ public class Issue {
     private String status = "Open";
     private String reportedBy;
     private String assignedTo;
+
+    @Column(columnDefinition = "TEXT")
+    private String resolutionNotes;
+
     private LocalDateTime resolvedAt;
 
     @CreationTimestamp

@@ -7,6 +7,7 @@ import com.sritulasinivas.entity.User;
 import com.sritulasinivas.repository.UserRepository;
 import com.sritulasinivas.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 
 @Service
@@ -36,6 +38,9 @@ public class AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private Environment environment;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -66,7 +71,17 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        emailService.sendOtpEmail(savedUser.getEmail(), savedUser.getFirstName(), verificationToken);
+        boolean isLocal = Arrays.asList(environment.getActiveProfiles()).contains("local");
+        if (isLocal) {
+            // Auto-verify in local dev (no mail server)
+            savedUser.setEmailVerified(true);
+            savedUser.setIsActive(true);
+            savedUser.setVerificationToken(null);
+            savedUser.setTokenExpiresAt(null);
+            userRepository.save(savedUser);
+        } else {
+            emailService.sendOtpEmail(savedUser.getEmail(), savedUser.getFirstName(), verificationToken);
+        }
 
         // Return response without JWT — user must verify email before logging in
         return new AuthResponse(
