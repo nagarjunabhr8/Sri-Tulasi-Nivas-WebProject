@@ -1232,6 +1232,27 @@ body {
   color: var(--saffron);
 }
 
+.filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-left: 5px;
+  background: rgba(139, 69, 19, 0.15);
+  color: #8b4513;
+  line-height: 1;
+}
+
+.filter-btn.active .filter-count {
+  background: rgba(255,255,255,0.3);
+  color: #fff;
+}
+
 .filter-btn.active {
   background: var(--saffron);
   border-color: var(--saffron);

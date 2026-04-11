@@ -47,7 +47,7 @@ public class IssueController {
         "Open", Set.of("In Progress"),
         "In Progress", Set.of("Resolved", "Open"),
         "Resolved", Set.of("Closed", "In Progress"),
-        "Closed", Set.of()
+        "Closed", Set.of("Open")
     );
 
     @PatchMapping("/{id}/status")

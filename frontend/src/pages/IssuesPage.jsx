@@ -10,6 +10,14 @@ const NEXT_STATUS = {
   'Resolved': 'Closed',
 };
 
+// All valid forward/backward transitions per status
+const ALL_TRANSITIONS = {
+  'Open': ['In Progress'],
+  'In Progress': ['Resolved', 'Open'],
+  'Resolved': ['Closed', 'In Progress'],
+  'Closed': ['Open'],
+};
+
 const IssuesPage = () => {
   const { user } = useAuthStore();
   const [issues, setIssues] = useState([]);
@@ -61,6 +69,7 @@ const IssuesPage = () => {
         resolutionNotes: statusForm.resolutionNotes,
       });
       setStatusModal(null);
+      setFilterStatus(statusModal.targetStatus);
       load();
     } catch { } finally { setUpdating(false); }
   };
@@ -69,6 +78,7 @@ const IssuesPage = () => {
     setUpdating(true);
     try {
       await api.patch(`/issues/${issue.id}/status`, { status: 'Open' });
+      setFilterStatus('Open');
       load();
     } catch { } finally { setUpdating(false); }
   };
@@ -117,9 +127,14 @@ const IssuesPage = () => {
       )}
 
       <div className="filter-bar">
-        {['All','Open','In Progress','Resolved','Closed'].map(s => (
-          <button key={s} className={`filter-btn${filterStatus === s ? ' active' : ''}`} onClick={() => setFilterStatus(s)}>{s}</button>
-        ))}
+        {['All','Open','In Progress','Resolved','Closed'].map(s => {
+          const count = s === 'All' ? issues.length : issues.filter(i => i.status === s).length;
+          return (
+            <button key={s} className={`filter-btn${filterStatus === s ? ' active' : ''}`} onClick={() => setFilterStatus(s)}>
+              {s} {count > 0 && <span className="filter-count">{count}</span>}
+            </button>
+          );
+        })}
       </div>
 
       {loading ? <div className="loading-state">Loading…</div> : (
@@ -143,24 +158,20 @@ const IssuesPage = () => {
                     <td><span className={`badge ${statusColor(i.status)}`}>{i.status}</span></td>
                     <td>{i.createdAt ? new Date(i.createdAt).toLocaleDateString('en-IN') : '—'}</td>
                     <td onClick={e => e.stopPropagation()}>
-                      {NEXT_STATUS[i.status] && (
-                        <button
-                          className="btn-status-action"
-                          onClick={() => openStatusModal(i, NEXT_STATUS[i.status])}
-                          title={`Move to ${NEXT_STATUS[i.status]}`}
-                        >
-                          → {NEXT_STATUS[i.status]}
-                        </button>
-                      )}
-                      {(i.status === 'In Progress' || i.status === 'Resolved') && (
-                        <button
-                          className="btn-status-reopen"
-                          onClick={() => i.status === 'Resolved' ? openStatusModal(i, 'In Progress') : handleReopen(i)}
-                          title={i.status === 'Resolved' ? 'Reopen to In Progress' : 'Reopen'}
-                        >
-                          ↩ {i.status === 'Resolved' ? 'Reopen' : 'Reopen'}
-                        </button>
-                      )}
+                      {(ALL_TRANSITIONS[i.status] || []).map(target => {
+                        const isForward = NEXT_STATUS[i.status] === target;
+                        const isReopen = target === 'Open';
+                        return (
+                          <button
+                            key={target}
+                            className={isForward ? 'btn-status-action' : 'btn-status-reopen'}
+                            onClick={() => isReopen && i.status !== 'Resolved' && i.status !== 'Closed' ? handleReopen(i) : openStatusModal(i, target)}
+                            title={isReopen ? 'Reopen' : `Move to ${target}`}
+                          >
+                            {isReopen ? '↩ Reopen' : `→ ${target}`}
+                          </button>
+                        );
+                      })}
                     </td>
                   </tr>
                   {expandedId === i.id && (
@@ -232,7 +243,10 @@ const IssuesPage = () => {
                 </div>
               )}
               {statusModal.targetStatus === 'Closed' && (
-                <p style={{ color: '#666' }}>This will close the issue permanently. Are you sure?</p>
+                <p style={{ color: '#666' }}>This will close the issue. Are you sure?</p>
+              )}
+              {statusModal.targetStatus === 'Open' && statusModal.issue.status === 'Closed' && (
+                <p style={{ color: '#666' }}>This will reopen the closed issue. It will be set back to Open status.</p>
               )}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                 <button type="submit" className="auth-submit-btn" disabled={updating}>
