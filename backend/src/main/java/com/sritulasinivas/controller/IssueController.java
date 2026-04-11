@@ -50,7 +50,7 @@ public class IssueController {
         "Closed", Set.of("Open")
     );
 
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {
         return issueRepository.findById(id).map(existing -> {
             String newStatus = body.get("status");

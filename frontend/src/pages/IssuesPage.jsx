@@ -26,6 +26,18 @@ const ACTION_LABELS = {
   'Open': { icon: '↩', label: 'Reopen', modalTitle: 'Reopen Issue' },
 };
 
+// Category-to-assignee label mapping
+const CATEGORY_ASSIGNEE = {
+  'Plumbing': 'Plumber',
+  'Electrical': 'Electrician',
+  'Carpentry': 'Carpenter',
+  'Cleaning': 'Housekeeping Staff',
+  'Security': 'Security Personnel',
+  'Lift': 'Lift Technician',
+  'Common Area': 'Maintenance Staff',
+  'Other': 'Person',
+};
+
 const IssuesPage = () => {
   const { user } = useAuthStore();
   const [issues, setIssues] = useState([]);
@@ -39,6 +51,7 @@ const IssuesPage = () => {
   const [statusModal, setStatusModal] = useState(null); // { issue, targetStatus }
   const [statusForm, setStatusForm] = useState({ assignedTo: '', resolutionNotes: '' });
   const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState(null);
 
   // Issue detail expand
   const [expandedId, setExpandedId] = useState(null);
@@ -64,14 +77,16 @@ const IssuesPage = () => {
   const openStatusModal = (issue, targetStatus) => {
     setStatusModal({ issue, targetStatus });
     setStatusForm({ assignedTo: issue.assignedTo || '', resolutionNotes: '' });
+    setError(null);
   };
 
   const handleStatusUpdate = async e => {
     e.preventDefault();
     if (!statusModal) return;
     setUpdating(true);
+    setError(null);
     try {
-      await api.patch(`/issues/${statusModal.issue.id}/status`, {
+      await api.put(`/issues/${statusModal.issue.id}/status`, {
         status: statusModal.targetStatus,
         assignedTo: statusForm.assignedTo,
         resolutionNotes: statusForm.resolutionNotes,
@@ -79,7 +94,10 @@ const IssuesPage = () => {
       setStatusModal(null);
       setFilterStatus(statusModal.targetStatus);
       load();
-    } catch { } finally { setUpdating(false); }
+    } catch (err) {
+      const msg = err.response?.data?.error || err.response?.data?.message || 'Failed to update status. Please try again.';
+      setError(msg);
+    } finally { setUpdating(false); }
   };
 
   const filtered = filterStatus === 'All' ? issues : issues.filter(i => i.status === filterStatus);
@@ -160,14 +178,16 @@ const IssuesPage = () => {
                       {(ALL_TRANSITIONS[i.status] || []).map(target => {
                         const isForward = NEXT_STATUS[i.status] === target;
                         const act = ACTION_LABELS[target] || { icon: '→', label: target };
+                        const assignee = CATEGORY_ASSIGNEE[i.category] || 'Person';
+                        const label = target === 'In Progress' ? `Assign ${assignee}` : act.label;
                         return (
                           <button
                             key={target}
                             className={isForward ? 'btn-status-action' : 'btn-status-reopen'}
                             onClick={() => openStatusModal(i, target)}
-                            title={`${act.label} this issue`}
+                            title={`${label}`}
                           >
-                            {act.icon} {act.label}
+                            {act.icon} {label}
                           </button>
                         );
                       })}
@@ -215,7 +235,9 @@ const IssuesPage = () => {
       {statusModal && (
         <div className="modal-overlay" onClick={() => setStatusModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>{(ACTION_LABELS[statusModal.targetStatus] || {}).modalTitle || 'Update Status'}</h3>
+            <h3>{statusModal.targetStatus === 'In Progress'
+              ? `Assign ${CATEGORY_ASSIGNEE[statusModal.issue.category] || 'Person'}`
+              : (ACTION_LABELS[statusModal.targetStatus] || {}).modalTitle || 'Update Status'}</h3>
             <div className="modal-issue-info">
               <span className="badge-flat">{statusModal.issue.flatNo}</span>
               <span style={{ marginLeft: '0.5rem', fontWeight: 600 }}>{statusModal.issue.category}</span>
@@ -229,14 +251,14 @@ const IssuesPage = () => {
             <form onSubmit={handleStatusUpdate}>
               {statusModal.targetStatus === 'In Progress' && (
                 <div className="auth-field">
-                  <label>ASSIGN TO *</label>
+                  <label>ASSIGN {(CATEGORY_ASSIGNEE[statusModal.issue.category] || 'PERSON').toUpperCase()} TO *</label>
                   <input
                     required
                     value={statusForm.assignedTo}
                     onChange={e => setStatusForm({...statusForm, assignedTo: e.target.value})}
-                    placeholder="Name of person responsible for fixing this issue"
+                    placeholder={`Name of ${(CATEGORY_ASSIGNEE[statusModal.issue.category] || 'person').toLowerCase()} handling this issue`}
                   />
-                  <small style={{ color: '#888', marginTop: '0.25rem', display: 'block' }}>This person will be responsible for resolving the issue.</small>
+                  <small style={{ color: '#888', marginTop: '0.25rem', display: 'block' }}>This {(CATEGORY_ASSIGNEE[statusModal.issue.category] || 'person').toLowerCase()} will be responsible for resolving the issue.</small>
                 </div>
               )}
               {statusModal.targetStatus === 'Resolved' && (
@@ -273,9 +295,20 @@ const IssuesPage = () => {
                   <p style={{ color: '#555', margin: 0 }}>This will reopen the issue and reset assignments. The issue will go back to <strong>Open</strong> status.</p>
                 </div>
               )}
+              {error && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '0.75rem', color: '#b91c1c', fontSize: '0.85rem' }}>
+                  {error}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                 <button type="submit" className="auth-submit-btn" disabled={updating}>
-                  {updating ? 'Updating…' : `${(ACTION_LABELS[statusModal.targetStatus] || {}).icon || '→'} ${(ACTION_LABELS[statusModal.targetStatus] || {}).label || statusModal.targetStatus}`}
+                  {updating ? 'Updating…' : (() => {
+                    const act = ACTION_LABELS[statusModal.targetStatus] || {};
+                    if (statusModal.targetStatus === 'In Progress') {
+                      return `${act.icon} Assign ${CATEGORY_ASSIGNEE[statusModal.issue.category] || 'Person'}`;
+                    }
+                    return `${act.icon || '→'} ${act.label || statusModal.targetStatus}`;
+                  })()}
                 </button>
                 <button type="button" className="btn-cancel" onClick={() => setStatusModal(null)}>Cancel</button>
               </div>
