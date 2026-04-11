@@ -18,6 +18,14 @@ const ALL_TRANSITIONS = {
   'Closed': ['Open'],
 };
 
+// Friendly action labels for each transition
+const ACTION_LABELS = {
+  'In Progress': { icon: '👤', label: 'Assign', modalTitle: 'Assign Issue' },
+  'Resolved': { icon: '✅', label: 'Resolve', modalTitle: 'Resolve Issue' },
+  'Closed': { icon: '🔒', label: 'Close', modalTitle: 'Close Issue' },
+  'Open': { icon: '↩', label: 'Reopen', modalTitle: 'Reopen Issue' },
+};
+
 const IssuesPage = () => {
   const { user } = useAuthStore();
   const [issues, setIssues] = useState([]);
@@ -70,15 +78,6 @@ const IssuesPage = () => {
       });
       setStatusModal(null);
       setFilterStatus(statusModal.targetStatus);
-      load();
-    } catch { } finally { setUpdating(false); }
-  };
-
-  const handleReopen = async (issue) => {
-    setUpdating(true);
-    try {
-      await api.patch(`/issues/${issue.id}/status`, { status: 'Open' });
-      setFilterStatus('Open');
       load();
     } catch { } finally { setUpdating(false); }
   };
@@ -160,15 +159,15 @@ const IssuesPage = () => {
                     <td onClick={e => e.stopPropagation()}>
                       {(ALL_TRANSITIONS[i.status] || []).map(target => {
                         const isForward = NEXT_STATUS[i.status] === target;
-                        const isReopen = target === 'Open';
+                        const act = ACTION_LABELS[target] || { icon: '→', label: target };
                         return (
                           <button
                             key={target}
                             className={isForward ? 'btn-status-action' : 'btn-status-reopen'}
-                            onClick={() => isReopen && i.status !== 'Resolved' && i.status !== 'Closed' ? handleReopen(i) : openStatusModal(i, target)}
-                            title={isReopen ? 'Reopen' : `Move to ${target}`}
+                            onClick={() => openStatusModal(i, target)}
+                            title={`${act.label} this issue`}
                           >
-                            {isReopen ? '↩ Reopen' : `→ ${target}`}
+                            {act.icon} {act.label}
                           </button>
                         );
                       })}
@@ -180,10 +179,11 @@ const IssuesPage = () => {
                         <div className="issue-detail-panel">
                           <div className="issue-detail-grid">
                             <div><strong>Reported By:</strong> {i.reportedBy || '—'}</div>
-                            <div><strong>Assigned To:</strong> {i.assignedTo || 'Unassigned'}</div>
+                            <div><strong>Assigned To:</strong> {i.assignedTo || <span style={{ color: '#999' }}>Not yet assigned</span>}</div>
                             <div><strong>Created:</strong> {i.createdAt ? new Date(i.createdAt).toLocaleString('en-IN') : '—'}</div>
                             <div><strong>Last Updated:</strong> {i.updatedAt ? new Date(i.updatedAt).toLocaleString('en-IN') : '—'}</div>
-                            {i.resolvedAt && <div><strong>Resolved At:</strong> {new Date(i.resolvedAt).toLocaleString('en-IN')}</div>}
+                            <div><strong>Resolved On:</strong> {i.resolvedAt ? new Date(i.resolvedAt).toLocaleString('en-IN') : <span style={{ color: '#999' }}>Not yet resolved</span>}</div>
+                            <div><strong>Status:</strong> <span className={`badge ${statusColor(i.status)}`}>{i.status}</span></div>
                             {i.resolutionNotes && <div className="issue-resolution-notes"><strong>Resolution Notes:</strong> {i.resolutionNotes}</div>}
                           </div>
                           <div className="issue-status-timeline">
@@ -215,42 +215,67 @@ const IssuesPage = () => {
       {statusModal && (
         <div className="modal-overlay" onClick={() => setStatusModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>Update Status → {statusModal.targetStatus}</h3>
-            <p style={{ color: '#666', marginBottom: '1rem' }}>
-              Issue: <strong>{statusModal.issue.description}</strong> (Flat {statusModal.issue.flatNo})
-            </p>
+            <h3>{(ACTION_LABELS[statusModal.targetStatus] || {}).modalTitle || 'Update Status'}</h3>
+            <div className="modal-issue-info">
+              <span className="badge-flat">{statusModal.issue.flatNo}</span>
+              <span style={{ marginLeft: '0.5rem', fontWeight: 600 }}>{statusModal.issue.category}</span>
+              <span style={{ marginLeft: '0.5rem', color: '#666' }}>— {statusModal.issue.description}</span>
+            </div>
+            <div className="modal-status-flow">
+              <span className={`badge ${statusColor(statusModal.issue.status)}`}>{statusModal.issue.status}</span>
+              <span className="modal-arrow">→</span>
+              <span className={`badge ${statusColor(statusModal.targetStatus)}`}>{statusModal.targetStatus}</span>
+            </div>
             <form onSubmit={handleStatusUpdate}>
               {statusModal.targetStatus === 'In Progress' && (
                 <div className="auth-field">
-                  <label>ASSIGNED TO *</label>
+                  <label>ASSIGN TO *</label>
                   <input
                     required
                     value={statusForm.assignedTo}
                     onChange={e => setStatusForm({...statusForm, assignedTo: e.target.value})}
-                    placeholder="Enter name of person handling this issue"
+                    placeholder="Name of person responsible for fixing this issue"
                   />
+                  <small style={{ color: '#888', marginTop: '0.25rem', display: 'block' }}>This person will be responsible for resolving the issue.</small>
                 </div>
               )}
               {statusModal.targetStatus === 'Resolved' && (
-                <div className="auth-field">
-                  <label>RESOLUTION NOTES</label>
-                  <textarea
-                    value={statusForm.resolutionNotes}
-                    onChange={e => setStatusForm({...statusForm, resolutionNotes: e.target.value})}
-                    rows={3}
-                    placeholder="Describe how the issue was resolved…"
-                  />
-                </div>
+                <>
+                  <div className="auth-field">
+                    <label>RESOLUTION NOTES *</label>
+                    <textarea
+                      required
+                      value={statusForm.resolutionNotes}
+                      onChange={e => setStatusForm({...statusForm, resolutionNotes: e.target.value})}
+                      rows={3}
+                      placeholder="Describe how the issue was resolved…"
+                    />
+                    <small style={{ color: '#888', marginTop: '0.25rem', display: 'block' }}>Resolution date will be recorded automatically.</small>
+                  </div>
+                  {statusModal.issue.assignedTo && (
+                    <p style={{ color: '#555', fontSize: '0.85rem' }}>Handled by: <strong>{statusModal.issue.assignedTo}</strong></p>
+                  )}
+                </>
               )}
               {statusModal.targetStatus === 'Closed' && (
-                <p style={{ color: '#666' }}>This will close the issue. Are you sure?</p>
+                <div style={{ background: '#f9f3eb', padding: '1rem', borderRadius: '8px', marginBottom: '0.5rem' }}>
+                  <p style={{ color: '#555', margin: 0 }}>This will mark the issue as <strong>Closed</strong>. Please confirm all work is complete.</p>
+                  {statusModal.issue.resolvedAt && (
+                    <p style={{ color: '#666', margin: '0.5rem 0 0', fontSize: '0.85rem' }}>Resolved on: <strong>{new Date(statusModal.issue.resolvedAt).toLocaleString('en-IN')}</strong></p>
+                  )}
+                  {statusModal.issue.resolutionNotes && (
+                    <p style={{ color: '#666', margin: '0.25rem 0 0', fontSize: '0.85rem' }}>Notes: {statusModal.issue.resolutionNotes}</p>
+                  )}
+                </div>
               )}
-              {statusModal.targetStatus === 'Open' && statusModal.issue.status === 'Closed' && (
-                <p style={{ color: '#666' }}>This will reopen the closed issue. It will be set back to Open status.</p>
+              {statusModal.targetStatus === 'Open' && (
+                <div style={{ background: '#fff8f0', padding: '1rem', borderRadius: '8px', marginBottom: '0.5rem', borderLeft: '3px solid #e8a040' }}>
+                  <p style={{ color: '#555', margin: 0 }}>This will reopen the issue and reset assignments. The issue will go back to <strong>Open</strong> status.</p>
+                </div>
               )}
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                 <button type="submit" className="auth-submit-btn" disabled={updating}>
-                  {updating ? 'Updating…' : `Confirm → ${statusModal.targetStatus}`}
+                  {updating ? 'Updating…' : `${(ACTION_LABELS[statusModal.targetStatus] || {}).icon || '→'} ${(ACTION_LABELS[statusModal.targetStatus] || {}).label || statusModal.targetStatus}`}
                 </button>
                 <button type="button" className="btn-cancel" onClick={() => setStatusModal(null)}>Cancel</button>
               </div>
