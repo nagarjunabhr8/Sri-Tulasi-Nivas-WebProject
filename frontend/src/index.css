@@ -2135,3 +2135,168 @@ body {
   margin-top: .4rem;
   font-style: italic;
 }
+
+/* ── Maintenance & Corpus Page ─────────────────────────── */
+.maint-rate-banner {
+  background: linear-gradient(135deg, var(--saffron), var(--gold));
+  color: var(--white);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.maint-rate-amount {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.maint-rate-info {
+  font-size: .9rem;
+  opacity: .95;
+}
+.maint-rate-info strong { font-size: 1rem; }
+.maint-rate-info span { opacity: .85; }
+
+.maint-tabs {
+  display: flex;
+  gap: .25rem;
+  border-bottom: 2px solid var(--cream-dark);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+.maint-tab {
+  padding: .6rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all .2s;
+}
+.maint-tab:hover { color: var(--saffron); }
+.maint-tab.active {
+  color: var(--saffron);
+  border-bottom-color: var(--saffron);
+  font-weight: 600;
+}
+.maint-tab-content { min-height: 300px; }
+
+.corpus-breakdown {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--cream-dark);
+  overflow: hidden;
+}
+.corpus-row {
+  display: flex;
+  justify-content: space-between;
+  padding: .75rem 1.25rem;
+  font-size: .9rem;
+  border-bottom: 1px solid var(--cream-dark);
+}
+.corpus-row:last-child { border-bottom: none; }
+.corpus-row.income span:last-child { color: var(--green); font-weight: 600; }
+.corpus-row.expense span:last-child { color: #c0392b; font-weight: 600; }
+.corpus-row.total { background: var(--cream); font-size: 1rem; }
+
+.maint-stat-box {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--cream-dark);
+  padding: 1.25rem;
+}
+.maint-stat-box h4 { margin-bottom: .75rem; color: var(--text-dark); }
+.maint-stat-box p { font-size: .85rem; color: var(--text-mid); margin-bottom: .25rem; }
+
+.loan-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: 10px;
+  margin-bottom: .75rem;
+  overflow: hidden;
+}
+.loan-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background .15s;
+  gap: 1rem;
+}
+.loan-card-header:hover { background: var(--cream); }
+.loan-card-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.loan-card-amounts {
+  display: flex;
+  gap: 1.5rem;
+  font-size: .82rem;
+  color: var(--text-mid);
+  flex-wrap: wrap;
+}
+.loan-expand { color: var(--text-soft); font-size: .8rem; flex-shrink: 0; }
+.loan-card-detail {
+  padding: 0 1.25rem 1.25rem;
+  border-top: 1px solid var(--cream-dark);
+}
+.loan-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .5rem;
+  font-size: .85rem;
+  color: var(--text-mid);
+  padding: .75rem 0;
+}
+.loan-interest-due {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: .6rem 1rem;
+  font-size: .85rem;
+  display: flex;
+  gap: .25rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.loan-closed { opacity: .6; }
+
+.row-highlight { background: #fffae6 !important; }
+
+.btn-sm {
+  background: none;
+  border: 1px solid var(--cream-dark);
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: .8rem;
+  margin: 0 2px;
+  transition: background .15s;
+}
+.btn-sm:hover { background: var(--cream-dark); }
+
+.empty-state {
+  text-align: center;
+  color: var(--text-soft);
+  padding: 2rem;
+  font-size: .9rem;
+}
+
+.amount-positive { color: var(--green) !important; }
+.amount-negative { color: #c0392b !important; }
+
+@media (max-width: 768px) {
+  .maint-rate-banner { flex-direction: column; gap: .5rem; text-align: center; }
+  .maint-rate-amount { font-size: 1.5rem; }
+  .loan-card-header { flex-direction: column; align-items: flex-start; }
+  .loan-card-amounts { gap: .75rem; }
+}
