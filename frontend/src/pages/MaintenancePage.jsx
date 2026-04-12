@@ -219,7 +219,7 @@ const MaintenancePage = () => {
       )}
 
       {/* Summary Cards */}
-      <div className="summary-cards" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(155px, 1fr))' }}>
+      <div className="summary-cards summary-cards-6">
         <div className={`summary-card ${corpusBalance >= 0 ? 'green' : 'red'}`}>
           <span className="summary-icon">🏦</span>
           <div><div className="summary-val">₹{corpusBalance.toLocaleString()}</div><div className="summary-label">Corpus Balance</div></div>
