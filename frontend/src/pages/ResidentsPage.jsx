@@ -141,6 +141,7 @@ const ResidentsPage = () => {
                       onChange={e => setEditData({ ...editData, role: e.target.value })}>
                       <option value="TENANT">TENANT</option>
                       <option value="OWNER">OWNER</option>
+                      {isAdmin && <option value="TREASURER">TREASURER</option>}
                       {isAdmin && <option value="ADMIN">ADMIN</option>}
                     </select>
                   </td>

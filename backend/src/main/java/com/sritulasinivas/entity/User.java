@@ -84,6 +84,6 @@ public class User {
     private LocalDateTime updatedAt;
 
     public enum UserRole {
-        ADMIN, OWNER, TENANT, GUEST
+        ADMIN, TREASURER, OWNER, TENANT, GUEST
     }
 }

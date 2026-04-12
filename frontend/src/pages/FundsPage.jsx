@@ -7,6 +7,7 @@ const empty = { category: '', subCategory: '', type: 'Income', amount: '', date:
 const FundsPage = () => {
   const { user } = useAuthStore();
   const isAdmin = user?.role === 'ADMIN';
+  const canManage = user?.role === 'ADMIN' || user?.role === 'TREASURER';
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -64,7 +65,7 @@ const FundsPage = () => {
           <h1>💰 Funds</h1>
           <p>Community income &amp; expense tracking</p>
         </div>
-        {isAdmin && (
+        {canManage && (
           <button className="btn-add" onClick={() => showForm ? cancelForm() : setShowForm(true)}>
             {showForm ? '✕ Cancel' : '+ Add Entry'}
           </button>
@@ -86,7 +87,7 @@ const FundsPage = () => {
         </div>
       </div>
 
-      {showForm && isAdmin && (
+      {showForm && canManage && (
         <form className="inline-form" onSubmit={handleSubmit}>
           <h3>{editingId ? 'Edit Fund Entry' : 'Add Fund Entry'}</h3>
           <div className="form-row-3">
@@ -130,11 +131,11 @@ const FundsPage = () => {
         <div className="data-table-wrapper">
           <table className="data-table">
             <thead>
-              <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>From/To</th><th>Amount</th>{isAdmin && <th>Actions</th>}</tr>
+              <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>From/To</th><th>Amount</th>{canManage && <th>Actions</th>}</tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={isAdmin ? 7 : 6} className="empty-row">No entries found</td></tr>
+                <tr><td colSpan={canManage ? 7 : 6} className="empty-row">No entries found</td></tr>
               ) : filtered.map(r => (
                 <tr key={r.id}>
                   <td>{r.date}</td>
@@ -145,7 +146,7 @@ const FundsPage = () => {
                   <td className={r.type === 'Income' ? 'amount-positive' : 'amount-negative'}>
                     {r.type === 'Income' ? '+' : '-'}₹{(r.amount || 0).toLocaleString()}
                   </td>
-                  {isAdmin && (
+                  {canManage && (
                     <td>
                       <button className="btn-sm" onClick={() => editRecord(r)} title="Edit">✏️</button>
                       <button className="btn-sm" onClick={() => deleteRecord(r.id)} title="Delete">🗑️</button>

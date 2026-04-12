@@ -21,8 +21,17 @@ public class ResidentController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<User> getAll(Principal principal) {
+        List<User> all = userRepository.findAll();
+        if (principal != null) {
+            User requester = userRepository.findByEmail(principal.getName()).orElse(null);
+            if (requester != null && requester.getRole() == User.UserRole.ADMIN) {
+                return all;
+            }
+        }
+        return all.stream()
+            .filter(u -> u.getRole() != User.UserRole.ADMIN)
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/phones")

@@ -24,6 +24,7 @@ const emptyLoan = { memberName: '', flatNo: '', principalAmount: '', interestRat
 const MaintenancePage = () => {
   const { user } = useAuthStore();
   const isAdmin = user?.role === 'ADMIN';
+  const canManage = user?.role === 'ADMIN' || user?.role === 'TREASURER';
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
@@ -301,10 +302,10 @@ const MaintenancePage = () => {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3>🏠 Flat Details ({flats.length})</h3>
-              {isAdmin && <button className="btn-add" onClick={() => { setShowFlatForm(!showFlatForm); setEditingId(null); setFlatForm(emptyFlat); }}>{showFlatForm ? '✕ Cancel' : '+ Add Flat'}</button>}
+              {canManage && <button className="btn-add" onClick={() => { setShowFlatForm(!showFlatForm); setEditingId(null); setFlatForm(emptyFlat); }}>{showFlatForm ? '✕ Cancel' : '+ Add Flat'}</button>}
             </div>
 
-            {showFlatForm && isAdmin && (
+            {showFlatForm && canManage && (
               <form className="inline-form" onSubmit={handleFlatSubmit}>
                 <h3>{editingId ? 'Edit Flat' : 'Add Flat'}</h3>
                 <div className="form-row-3">
@@ -350,9 +351,9 @@ const MaintenancePage = () => {
 
             <div className="data-table-wrapper">
               <table className="data-table">
-                <thead><tr><th>Flat</th><th>Owner</th><th>Type</th><th>Tenant</th><th>Phone</th><th>Status</th>{isAdmin && <th>Actions</th>}</tr></thead>
+                <thead><tr><th>Flat</th><th>Owner</th><th>Type</th><th>Tenant</th><th>Phone</th><th>Status</th>{canManage && <th>Actions</th>}</tr></thead>
                 <tbody>
-                  {flats.length === 0 ? <tr><td colSpan={isAdmin ? 7 : 6} className="empty-row">No flats registered yet</td></tr>
+                  {flats.length === 0 ? <tr><td colSpan={canManage ? 7 : 6} className="empty-row">No flats registered yet</td></tr>
                   : flats.map(f => (
                     <tr key={f.id}>
                       <td><span className="badge-flat">{f.flatNo}</span></td>
@@ -361,7 +362,7 @@ const MaintenancePage = () => {
                       <td>{f.tenantName || '—'}</td>
                       <td>{f.occupantType === 'Tenant' ? (f.tenantPhone || '—') : (f.ownerPhone || '—')}</td>
                       <td><span className={`badge ${f.isOccupied !== false ? 'badge-active' : 'badge-inactive'}`}>{f.isOccupied !== false ? 'Occupied' : 'Vacant'}</span></td>
-                      {isAdmin && <td><button className="btn-sm" onClick={() => editFlat(f)}>✏️</button> <button className="btn-sm" onClick={() => deleteFlat(f.id)}>🗑️</button></td>}
+                      {canManage && <td><button className="btn-sm" onClick={() => editFlat(f)}>✏️</button> <button className="btn-sm" onClick={() => deleteFlat(f.id)}>🗑️</button></td>}
                     </tr>
                   ))}
                 </tbody>
@@ -375,10 +376,10 @@ const MaintenancePage = () => {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3>💰 Monthly Payments</h3>
-              {isAdmin && <button className="btn-add" onClick={() => { setShowPaymentForm(!showPaymentForm); setEditingId(null); setPaymentForm(emptyPayment); }}>{showPaymentForm ? '✕ Cancel' : '+ Add Record'}</button>}
+              {canManage && <button className="btn-add" onClick={() => { setShowPaymentForm(!showPaymentForm); setEditingId(null); setPaymentForm(emptyPayment); }}>{showPaymentForm ? '✕ Cancel' : '+ Add Record'}</button>}
             </div>
 
-            {showPaymentForm && isAdmin && (
+            {showPaymentForm && canManage && (
               <form className="inline-form" onSubmit={handlePaymentSubmit}>
                 <h3>{editingId ? 'Edit Payment' : 'Add Maintenance Record'}</h3>
                 <div className="form-row-3">
@@ -434,9 +435,9 @@ const MaintenancePage = () => {
 
             <div className="data-table-wrapper">
               <table className="data-table">
-                <thead><tr><th>Flat</th><th>Resident</th><th>Month/Year</th><th>Amount</th><th>Mode</th><th>Status</th>{isAdmin && <th>Actions</th>}</tr></thead>
+                <thead><tr><th>Flat</th><th>Resident</th><th>Month/Year</th><th>Amount</th><th>Mode</th><th>Status</th>{canManage && <th>Actions</th>}</tr></thead>
                 <tbody>
-                  {filteredPayments.length === 0 ? <tr><td colSpan={isAdmin ? 7 : 6} className="empty-row">No records found</td></tr>
+                  {filteredPayments.length === 0 ? <tr><td colSpan={canManage ? 7 : 6} className="empty-row">No records found</td></tr>
                   : filteredPayments.map(r => (
                     <tr key={r.id}>
                       <td><span className="badge-flat">{r.flatNo}</span></td>
@@ -445,7 +446,7 @@ const MaintenancePage = () => {
                       <td>₹{(r.amount || 0).toLocaleString()}</td>
                       <td>{r.paymentMode || '—'}</td>
                       <td><span className={`badge badge-status-${(r.paidStatus || 'unpaid').toLowerCase()}`}>{r.paidStatus}</span></td>
-                      {isAdmin && <td><button className="btn-sm" onClick={() => editPayment(r)}>✏️</button> <button className="btn-sm" onClick={() => deletePayment(r.id)}>🗑️</button></td>}
+                      {canManage && <td><button className="btn-sm" onClick={() => editPayment(r)}>✏️</button> <button className="btn-sm" onClick={() => deletePayment(r.id)}>🗑️</button></td>}
                     </tr>
                   ))}
                 </tbody>
@@ -496,10 +497,10 @@ const MaintenancePage = () => {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3>🤝 Member Loans ({loans.length})</h3>
-              {isAdmin && <button className="btn-add" onClick={() => { setShowLoanForm(!showLoanForm); setEditingId(null); setLoanForm(emptyLoan); }}>{showLoanForm ? '✕ Cancel' : '+ New Loan'}</button>}
+              {canManage && <button className="btn-add" onClick={() => { setShowLoanForm(!showLoanForm); setEditingId(null); setLoanForm(emptyLoan); }}>{showLoanForm ? '✕ Cancel' : '+ New Loan'}</button>}
             </div>
 
-            {showLoanForm && isAdmin && (
+            {showLoanForm && canManage && (
               <form className="inline-form" onSubmit={handleLoanSubmit}>
                 <h3>{editingId ? 'Edit Loan' : 'Disburse New Loan from Corpus'}</h3>
                 <div className="form-row-3">
@@ -566,7 +567,7 @@ const MaintenancePage = () => {
                       </div>
                     )}
 
-                    {isAdmin && loan.status === 'Active' && !repaymentForm && (
+                    {canManage && loan.status === 'Active' && !repaymentForm && (
                       <button className="btn-add" style={{ margin: '1rem 0' }} onClick={() => startRepayment(loan)}>+ Record Repayment</button>
                     )}
 
@@ -637,13 +638,13 @@ const MaintenancePage = () => {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3>⚙️ Monthly Maintenance Rate</h3>
-              {isAdmin && <button className="btn-add" onClick={() => { setShowSettingForm(!showSettingForm); setEditingId(null); setSettingForm(emptySetting); }}>{showSettingForm ? '✕ Cancel' : '+ Set Rate'}</button>}
+              {canManage && <button className="btn-add" onClick={() => { setShowSettingForm(!showSettingForm); setEditingId(null); setSettingForm(emptySetting); }}>{showSettingForm ? '✕ Cancel' : '+ Set Rate'}</button>}
             </div>
             <p style={{ color: 'var(--text-soft)', fontSize: '.85rem', marginBottom: '1rem' }}>
               The monthly maintenance amount is decided collectively by all flat owners and tenants. Set the rate here — it will be highlighted on the Maintenance page.
             </p>
 
-            {showSettingForm && isAdmin && (
+            {showSettingForm && canManage && (
               <form className="inline-form" onSubmit={handleSettingSubmit}>
                 <h3>{editingId ? 'Edit Rate' : 'Set Monthly Rate'}</h3>
                 <div className="form-row-3">
@@ -678,9 +679,9 @@ const MaintenancePage = () => {
 
             <div className="data-table-wrapper">
               <table className="data-table">
-                <thead><tr><th>Month</th><th>Year</th><th>Amount</th><th>Decided By</th><th>Date</th><th>Notes</th>{isAdmin && <th>Actions</th>}</tr></thead>
+                <thead><tr><th>Month</th><th>Year</th><th>Amount</th><th>Decided By</th><th>Date</th><th>Notes</th>{canManage && <th>Actions</th>}</tr></thead>
                 <tbody>
-                  {settings.length === 0 ? <tr><td colSpan={isAdmin ? 7 : 6} className="empty-row">No rates set yet</td></tr>
+                  {settings.length === 0 ? <tr><td colSpan={canManage ? 7 : 6} className="empty-row">No rates set yet</td></tr>
                   : settings.map(s => (
                     <tr key={s.id} className={s.month === CURRENT_MONTH && s.year === CURRENT_YEAR ? 'row-highlight' : ''}>
                       <td>{s.month}</td>
@@ -689,7 +690,7 @@ const MaintenancePage = () => {
                       <td>{s.decidedBy || '—'}</td>
                       <td>{s.decidedDate || '—'}</td>
                       <td>{s.notes || '—'}</td>
-                      {isAdmin && <td><button className="btn-sm" onClick={() => editSetting(s)}>✏️</button></td>}
+                      {canManage && <td><button className="btn-sm" onClick={() => editSetting(s)}>✏️</button></td>}
                     </tr>
                   ))}
                 </tbody>
