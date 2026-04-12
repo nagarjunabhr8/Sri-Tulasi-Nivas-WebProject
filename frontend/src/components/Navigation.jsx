@@ -37,8 +37,8 @@ const NAV_ITEMS = [
     ]
   },
   {
-    label: 'President', path: '/contacts', dropdown: [
-      { label: '👤 About President', path: '/contacts' },
+    label: 'President', path: '/committee', dropdown: [
+      { label: '🏢 Committee Members', path: '/committee' },
       { label: '📢 Announcements', path: '/updates' },
     ]
   },

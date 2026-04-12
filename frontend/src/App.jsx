@@ -14,6 +14,7 @@ import ContactsPage from './pages/ContactsPage';
 import MeetingsPage from './pages/MeetingsPage';
 import UpdatesPage from './pages/UpdatesPage';
 import IssuesPage from './pages/IssuesPage';
+import CommitteePage from './pages/CommitteePage';
 import PrivateRoute from './components/PrivateRoute';
 import VerifyOtpPage from './pages/VerifyOtpPage';
 import './App.css';
@@ -52,6 +53,7 @@ function App() {
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/updates" element={<UpdatesPage />} />
           <Route path="/issues" element={<IssuesPage />} />
+          <Route path="/committee" element={<CommitteePage />} />
           <Route path="/auth" element={<Navigate to="/residents" replace />} />
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
