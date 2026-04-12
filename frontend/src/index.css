@@ -1478,6 +1478,15 @@ body {
   align-items: flex-start;
   box-shadow: 0 2px 10px rgba(0,0,0,0.07);
   border-left: 3px solid var(--gold);
+  position: relative;
+}
+
+.contact-actions {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: flex;
+  gap: 0.3rem;
 }
 
 .contact-avatar {

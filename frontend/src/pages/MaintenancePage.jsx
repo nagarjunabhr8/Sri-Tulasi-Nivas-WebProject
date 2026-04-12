@@ -3,7 +3,7 @@ import api from '../utils/api';
 import { useAuthStore } from '../store/authStore';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const YEARS = Array.from({length: 6}, (_, i) => new Date().getFullYear() + 1 - i);
+const YEARS = Array.from({length: new Date().getFullYear() + 2 - 2020}, (_, i) => new Date().getFullYear() + 1 - i);
 const CURRENT_MONTH = MONTHS[new Date().getMonth()];
 const CURRENT_YEAR = new Date().getFullYear();
 
