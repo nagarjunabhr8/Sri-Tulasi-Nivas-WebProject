@@ -1,0 +1,6 @@
+<claude-code-hint v="1" type="plugin" value="vercel@claude-plugins-official" />
+WARNING! `--confirm` is deprecated, please use `--yes` instead
+
+  Set up "E:\AITesterBluePrint\SriTulasiNivas\Sri-Tulasi-Nivas-00\frontend"
+Loading teams…
+Error: The specified token is not valid. Use `vercel login` to generate a new token.

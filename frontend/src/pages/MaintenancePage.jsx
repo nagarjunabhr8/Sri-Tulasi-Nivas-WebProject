@@ -23,7 +23,6 @@ const emptyLoan = { memberName: '', flatNo: '', principalAmount: '', interestRat
 
 const MaintenancePage = () => {
   const { user } = useAuthStore();
-  const isAdmin = user?.role === 'ADMIN';
   const canManage = user?.role === 'ADMIN' || user?.role === 'TREASURER';
 
   const [activeTab, setActiveTab] = useState('dashboard');

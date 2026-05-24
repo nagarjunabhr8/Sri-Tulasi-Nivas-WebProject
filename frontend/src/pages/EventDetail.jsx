@@ -24,19 +24,18 @@ const EventDetail = () => {
   const [rsvpLoading, setRsvpLoading] = useState(false);
 
   useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const res = await api.get(`/events/${id}`);
+        setEvent(res.data);
+      } catch {
+        setError('Event not found or failed to load.');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchEvent();
   }, [id]);
-
-  const fetchEvent = async () => {
-    try {
-      const res = await api.get(`/events/${id}`);
-      setEvent(res.data);
-    } catch {
-      setError('Event not found or failed to load.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRsvp = async (status) => {
     setRsvpLoading(true);

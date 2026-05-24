@@ -1,0 +1,46 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: 🏛️
+      - heading "Sri Tulasi Nivas" [level=1] [ref=e7]
+      - paragraph [ref=e8]: RESIDENT'S PORTAL - HYDERABAD
+    - generic [ref=e9]:
+      - button "Sign In" [ref=e10] [cursor=pointer]
+      - button "Register" [ref=e11] [cursor=pointer]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]: EMAIL ADDRESS
+        - textbox "yourname@gmail.com" [ref=e15]
+      - generic [ref=e16]:
+        - generic [ref=e17]: PASSWORD
+        - generic [ref=e18]:
+          - textbox "••••••••" [ref=e19]
+          - button "Toggle password visibility" [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+      - button "Sign In to Portal" [ref=e24] [cursor=pointer]
+      - paragraph [ref=e25]:
+        - button "Forgot password?" [ref=e26] [cursor=pointer]
+      - generic [ref=e28]: or
+      - paragraph [ref=e29]:
+        - text: New resident?
+        - button "Register here" [ref=e30] [cursor=pointer]
+  - generic [ref=e32]:
+    - generic [ref=e33]: 🏠
+    - heading "Your Community, Your Home" [level=2] [ref=e34]:
+      - text: Your Community,
+      - text: Your Home
+    - paragraph [ref=e35]: Manage your apartment life seamlessly — from maintenance requests to community events, all in one secure portal.
+    - list [ref=e36]:
+      - listitem [ref=e37]:
+        - generic [ref=e38]: 🎉
+        - generic [ref=e39]: Events & Festivals
+      - listitem [ref=e40]:
+        - generic [ref=e41]: 🔧
+        - generic [ref=e42]: Maintenance Tracking
+      - listitem [ref=e43]:
+        - generic [ref=e44]: 💰
+        - generic [ref=e45]: Transparent Funds
+      - listitem [ref=e46]:
+        - generic [ref=e47]: 🔔
+        - generic [ref=e48]: Instant Updates
+    - paragraph [ref=e53]: Est. 2020 · Hyderabad, Telangana

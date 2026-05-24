@@ -1,0 +1,55 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]: 🌿
+        - generic [ref=e8]:
+          - heading "Sri Tulasi Nivas" [level=1] [ref=e9]
+          - paragraph [ref=e10]: RESIDENTIAL APARTMENT COMMUNITY · HYDERABAD
+      - generic [ref=e11]:
+        - generic [ref=e12]: "\"Where Community Blossoms\""
+        - generic [ref=e13]: Est. 2020 · Telangana, India
+    - navigation [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - link "Home" [ref=e18] [cursor=pointer]:
+            - /url: /residents
+          - link "Events ▾" [ref=e20] [cursor=pointer]:
+            - /url: /events
+            - text: Events
+            - generic [ref=e21]: ▾
+          - link "Maintenance ▾" [ref=e23] [cursor=pointer]:
+            - /url: /maintenance
+            - text: Maintenance
+            - generic [ref=e24]: ▾
+          - link "Issues" [ref=e26] [cursor=pointer]:
+            - /url: /issues
+          - link "Meetings ▾" [ref=e28] [cursor=pointer]:
+            - /url: /meetings
+            - text: Meetings
+            - generic [ref=e29]: ▾
+          - link "Apartment Funds ▾" [ref=e31] [cursor=pointer]:
+            - /url: /funds
+            - text: Apartment Funds
+            - generic [ref=e32]: ▾
+          - link "Contacts ▾" [ref=e34] [cursor=pointer]:
+            - /url: /contacts
+            - text: Contacts
+            - generic [ref=e35]: ▾
+          - link "President ▾" [ref=e37] [cursor=pointer]:
+            - /url: /committee
+            - text: President
+            - generic [ref=e38]: ▾
+          - link "Updates ▾" [ref=e40] [cursor=pointer]:
+            - /url: /updates
+            - text: Updates
+            - generic [ref=e41]: ▾
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]: NB
+            - generic [ref=e45]:
+              - generic [ref=e46]: Nagarjuna Behara
+              - generic [ref=e47]: ADMIN
+          - button "⏻ Logout" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e51]: Loading…

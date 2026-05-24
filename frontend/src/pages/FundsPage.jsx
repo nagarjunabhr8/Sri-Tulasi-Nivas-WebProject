@@ -6,7 +6,6 @@ const empty = { category: '', subCategory: '', type: 'Income', amount: '', date:
 
 const FundsPage = () => {
   const { user } = useAuthStore();
-  const isAdmin = user?.role === 'ADMIN';
   const canManage = user?.role === 'ADMIN' || user?.role === 'TREASURER';
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);

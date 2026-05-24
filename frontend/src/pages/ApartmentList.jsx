@@ -8,23 +8,22 @@ const ApartmentList = () => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
+    const fetchApartments = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/apartments/public', {
+          params: { page, size: 10 },
+        });
+        setApartments(response.data.content);
+      } catch (err) {
+        setError('Failed to load apartments');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchApartments();
   }, [page]);
-
-  const fetchApartments = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/apartments/public', {
-        params: { page, size: 10 },
-      });
-      setApartments(response.data.content);
-    } catch (err) {
-      setError('Failed to load apartments');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <div className="container"><p>Loading apartments...</p></div>;
 
